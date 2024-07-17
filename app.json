@@ -1,7 +1,7 @@
 {
   "expo": {
-    "name": "friends-and-debt",
-    "slug": "friends-and-debt",
+    "name": "friends-and-debt-mobile",
+    "slug": "friends-and-debt-mobile",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
