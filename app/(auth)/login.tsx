@@ -1,16 +1,13 @@
-import { useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import { Pressable, StyleSheet, Text, View, Image } from "react-native";
-import AsyncStorage from "@react-native-async-storage/async-storage";
-import { TextInput } from "react-native-gesture-handler";
 import * as LocalAuthentication from 'expo-local-authentication';
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import { ThemedTextInput } from "@/components/ThemedTextInput";
-import { useAuth, UserCredentials } from "@/hooks/auth";
-import ParallaxScrollView from "@/components/ParallaxScrollView";
-import { useRecoilState } from "recoil";
-import { useFonts } from "expo-font";
+import { useAuth } from "@/hooks/auth";
+import { friendsAndDebtApi } from "@/hooks/app-initializer";
+import { AuthenticateModel } from "@/shared/friends-and-debt/friends-and-debt";
+import { notifyMessage } from "@/components/Toast";
 
 const checkBiometrics = async () => {
   const compatible = await LocalAuthentication.hasHardwareAsync();
@@ -29,15 +26,10 @@ const checkBiometrics = async () => {
 };
 
 export default function LoginScreen() {
-  const router = useRouter();
-  const [email, setEmail] = useState("user123");
-  const [password, setPassword] = useState("123qwe");
-  const { signIn } = useAuth();
-
-  // const [loadedUser, setLoadedUser] = useRecoilState<UserCredentials>(userCredentials);
-  const [loadedUser, setLoadedUser] = useState<UserCredentials | null>(null);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
   const [biometrics, setBiometrics] = useState(false);
-
+  const { signIn } = useAuth();
   const authenticate = async () => {
     try {
       const result = await LocalAuthentication.authenticateAsync({
@@ -56,12 +48,30 @@ export default function LoginScreen() {
         // Xác thực thất bại
       }
     } catch (error) {
+      console.error(error);
       // Xử lý lỗi
     }
   };
+
   const onLogin = async () => {
-    await AsyncStorage.setItem("user", JSON.stringify({ email, password }));
-    signIn({ email, password });
+    try {
+      var model = new AuthenticateModel()
+      model.userNameOrEmailAddress = email;
+      model.password = password;
+      model.rememberClient = true;
+      var result = await friendsAndDebtApi().authenticate(model);
+
+      if (result) {
+        signIn(result);
+
+
+    }
+    catch(error:any) {
+      var message = error.response;
+      notifyMessage(message.error.details);
+    }
+
+  
   };
 
   useEffect(() => {
@@ -85,19 +95,19 @@ export default function LoginScreen() {
         placeholder="Type password"
         secureTextEntry={true}
         autoCorrect={false}
+        autoCapitalize='none'
       />
       <ThemedView style={styles.separator} />
       <Pressable onPress={onLogin} style={styles.button}>
         <ThemedText style={styles.text} >Login</ThemedText>
       </Pressable>
-
       {/* <Pressable onPress={authenticate} style={styles.button} disabled={!biometrics}>
         <ThemedText style={styles.text}>Biometrics</ThemedText>
       </Pressable> */}
       {/* <Pressable onPress={() => router.push("/register")} style={styles.button}>
         <Text style={styles.text}>Register</Text>
       </Pressable> */}
-      
+     
     </ThemedView>
   );
 }

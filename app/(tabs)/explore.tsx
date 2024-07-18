@@ -1,12 +1,8 @@
 import Ionicons from '@expo/vector-icons/Ionicons';
 import { StyleSheet, Image, Platform, Button } from 'react-native';
-
-import { Collapsible } from '@/components/Collapsible';
-import { ExternalLink } from '@/components/ExternalLink';
 import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useAuth } from '@/hooks/auth';
 
 
@@ -22,7 +18,6 @@ export default function TabTwoScreen() {
       </ThemedView>
       <ThemedText>This app includes example code to help you get started.</ThemedText>
       <Button title="View the source code" onPress={async () => {
-            await AsyncStorage.removeItem("user");
             signOut();
       }}></Button>
     </ParallaxScrollView>

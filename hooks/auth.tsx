@@ -1,74 +1,56 @@
 import React, { FC, ReactNode } from "react";
 import { useRouter, useSegments } from "expo-router";
+import { useRecoilState } from "recoil";
+import { userCredentials } from '@/constants/Atoms';
+import { IAuthenticateResultModel } from "@/shared/friends-and-debt/friends-and-debt";
 
-export type UserCredentials = {
-    email: string;
-    password: string;
-  };
+type CredentialsContext = {
+  signIn: (userCredentials: IAuthenticateResultModel) => void;
+  signOut: () => void;
+  user: IAuthenticateResultModel | null;
+};
 
-  type CredentialsContext = {
-    signIn: (userCredentials: UserCredentials) => void;
-    signOut: () => void;
-    user: UserCredentials | null;
-  };
+type AuthProviderProps = {
+  // userCredentials: UserCredentials | null;
+  children?: ReactNode;
+};
 
-  type AuthProviderProps = {
-    userCredentials: UserCredentials | null;
-    children?: ReactNode;
-  };
+const AuthContext = React.createContext<CredentialsContext>({
+  signIn: () => { },
+  signOut: () => { },
+  user: null,
+});
 
-  const AuthContext = React.createContext<CredentialsContext>({
-    signIn: () => {},
-    signOut: () => {},
-    user: null,
-  });
-
-  // This hook can be used to access the user info.
 export function useAuth() {
-    return React.useContext(AuthContext);
-  }
+  return React.useContext(AuthContext);
+}
 
-  // This hook will protect the route access based on user authentication.
-function useProtectedRoute(user: UserCredentials | null) {
-    const segments = useSegments();
-    const router = useRouter();
-    
-    React.useEffect(() => {
-      const inAuthGroup = segments[0] === "(auth)";
-      // console.log({ user, segments });
-      if (
-        // If the user is not signed in and the initial segment is not anything in the auth group.
-        !user &&
-        !inAuthGroup
-      ) {
-        // Redirect to the sign-in page.
+function useProtectedRoute(user: IAuthenticateResultModel | null) {
+  const segments = useSegments();
+  const router = useRouter();
+  React.useEffect(() => {
+    const inAuthGroup = segments[0] === "(auth)";
+    if ((!user && !inAuthGroup) || (user?.accessToken == "")) {
+      router.replace("/login");
+    }
+    else if (user && (inAuthGroup || segments[0] === "[...404]")) {
+      router.replace("/");
+    }
+  }, [user, segments]);
+}
 
-       
-        router.replace("/login");
-      } else if (user && (inAuthGroup || segments[0] === "[...404]")) {
-        // Redirect away from the sign-in page.
-        router.replace("/");
-      }
-    }, [user, segments]);
-  }
-
-  export const Provider: FC<AuthProviderProps> = (props) => {
-    const [user, setAuth] = React.useState<UserCredentials | null>(
-      props.userCredentials
-    );
-    
-    useProtectedRoute(user);
-  
-    return (
-      <AuthContext.Provider
-        value={{
-          signIn: (userCredentials: UserCredentials) => setAuth(userCredentials),
-          signOut: () => setAuth(null),
-          user,
-        }}
-      >
-        {props.children}
-      </AuthContext.Provider>
-    );
-  };
-  
+export const Provider: FC<AuthProviderProps> = (props) => {
+  const [user, setAuth] = useRecoilState<IAuthenticateResultModel | null>(userCredentials);
+  useProtectedRoute(user);
+  return (
+    <AuthContext.Provider
+      value={{
+        signIn: (userCredentials: IAuthenticateResultModel) => setAuth(userCredentials),
+        signOut: () => setAuth(null),
+        user,
+      }}
+    >
+      {props.children}
+    </AuthContext.Provider>
+  );
+};

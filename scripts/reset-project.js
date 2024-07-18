@@ -15,8 +15,9 @@ const newDirPath = path.join(root, 'app-example');
 const newAppDirPath = path.join(root, 'app');
 
 const indexContent = `import { Text, View } from "react-native";
-
+import { RecoilRoot } from "recoil";
 export default function Index() {
+ 
   return (
     <View
       style={{
@@ -31,13 +32,13 @@ export default function Index() {
 }
 `;
 
-const layoutContent = `import { Stack } from "expo-router";
-
+const layoutContent = `
+import { Stack } from "expo-router";
 export default function RootLayout() {
   return (
-    <Stack>
-      <Stack.Screen name="index" />
-    </Stack>
+      <Stack>
+        <Stack.Screen name="index" />
+      </Stack>
   );
 }
 `;
