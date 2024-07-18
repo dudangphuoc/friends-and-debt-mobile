@@ -63,12 +63,9 @@ export default function LoginScreen() {
 
       if (result) {
         signIn(result);
-
-
-    }
-    catch(error:any) {
-      var message = error.response;
-      notifyMessage(message.error.details);
+      }
+    } catch (error:any) {
+      notifyMessage(error.response.error.details);
     }
 
   
