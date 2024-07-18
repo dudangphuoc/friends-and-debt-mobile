@@ -26,10 +26,11 @@ const checkBiometrics = async () => {
 };
 
 export default function LoginScreen() {
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const [email, setEmail] = useState("admin");
+  const [password, setPassword] = useState("123qwe");
   const [biometrics, setBiometrics] = useState(false);
   const { signIn } = useAuth();
+
   const authenticate = async () => {
     try {
       const result = await LocalAuthentication.authenticateAsync({
@@ -53,17 +54,25 @@ export default function LoginScreen() {
     }
   };
 
-  const onLogin = async () => {
+  const  onLogin = async () => {
     try {
       var model = new AuthenticateModel()
       model.userNameOrEmailAddress = email;
       model.password = password;
-      model.rememberClient = true;
-      var result = await friendsAndDebtApi().authenticate(model);
 
-      if (result) {
-        signIn(result);
-      }
+      friendsAndDebtApi().authenticate(model)
+      .then((response) => {
+        console.log(response);
+        signIn(response);
+      })
+      .catch((error) => {
+        notifyMessage(error.response.error.details);
+      });
+
+
+      // if (result) {
+      //   signIn(result);
+      // }
     } catch (error:any) {
       notifyMessage(error.response.error.details);
     }
@@ -72,7 +81,12 @@ export default function LoginScreen() {
   };
 
   useEffect(() => {
-    checkBiometrics().then(setBiometrics);
+    // for (let i = 0; i < 10; i++) {
+    //   onLogin();
+    // }
+   
+    // checkBiometrics().then(setBiometrics);
+   
    }, []);
 
   return (
@@ -98,6 +112,7 @@ export default function LoginScreen() {
       <Pressable onPress={onLogin} style={styles.button}>
         <ThemedText style={styles.text} >Login</ThemedText>
       </Pressable>
+
       {/* <Pressable onPress={authenticate} style={styles.button} disabled={!biometrics}>
         <ThemedText style={styles.text}>Biometrics</ThemedText>
       </Pressable> */}
