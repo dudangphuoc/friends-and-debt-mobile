@@ -6,7 +6,7 @@ import { ThemedView } from '@/components/ThemedView';
 import { useAuth } from '@/hooks/auth';
 
 
-export default function TabTwoScreen() {
+export default function SettingScreen() {
   const { signOut } = useAuth();
 
   return (

@@ -8,73 +8,56 @@
 /* eslint-disable */
 // ReSharper disable InconsistentNaming
 
-import axios, { AxiosError, AxiosInstance, AxiosRequestConfig, AxiosResponse, CancelToken } from 'axios';
+import moment from 'moment';
 
-export class FriendsAndDebt {
-    protected instance: AxiosInstance;
-    protected baseUrl: string;
+export class AccountFriendsAndDebt {
+    private http: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> };
+    private baseUrl: string;
     protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
 
-    constructor(baseUrl?: string, instance?: AxiosInstance) {
-
-        this.instance = instance || axios.create();
-
+    constructor(baseUrl?: string, http?: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> }) {
+        this.http = http ? http : window as any;
         this.baseUrl = baseUrl ?? "";
-
     }
 
     /**
      * @param body (optional) 
      * @return Success
      */
-    isTenantAvailable(body: IsTenantAvailableInput | undefined, signal?: AbortSignal): Promise<IsTenantAvailableOutput> {
+    isTenantAvailable(body: IsTenantAvailableInput | undefined): Promise<IsTenantAvailableOutput> {
         let url_ = this.baseUrl + "/api/services/app/Account/IsTenantAvailable";
         url_ = url_.replace(/[?&]$/, "");
 
         const content_ = JSON.stringify(body);
 
-        let options_: AxiosRequestConfig = {
-            data: content_,
+        let options_: RequestInit = {
+            body: content_,
             method: "POST",
-            url: url_,
             headers: {
                 "Content-Type": "application/json",
                 "Accept": "text/plain"
-            },
-            signal
+            }
         };
 
-        return this.instance.request(options_).catch((_error: any) => {
-            if (isAxiosError(_error) && _error.response) {
-                return _error.response;
-            } else {
-                throw _error;
-            }
-        }).then((_response: AxiosResponse) => {
+        return this.http.fetch(url_, options_).then((_response: Response) => {
             return this.processIsTenantAvailable(_response);
         });
     }
 
-    protected processIsTenantAvailable(response: AxiosResponse): Promise<IsTenantAvailableOutput> {
+    protected processIsTenantAvailable(response: Response): Promise<IsTenantAvailableOutput> {
         const status = response.status;
-        let _headers: any = {};
-        if (response.headers && typeof response.headers === "object") {
-            for (const k in response.headers) {
-                if (response.headers.hasOwnProperty(k)) {
-                    _headers[k] = response.headers[k];
-                }
-            }
-        }
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
-            const _responseText = response.data;
+            return response.text().then((_responseText) => {
             let result200: any = null;
-            let resultData200  = _responseText;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
             result200 = IsTenantAvailableOutput.fromJS(resultData200);
-            return Promise.resolve<IsTenantAvailableOutput>(result200);
-
+            return result200;
+            });
         } else if (status !== 200 && status !== 204) {
-            const _responseText = response.data;
+            return response.text().then((_responseText) => {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
         }
         return Promise.resolve<IsTenantAvailableOutput>(null as any);
     }
@@ -83,110 +66,93 @@ export class FriendsAndDebt {
      * @param body (optional) 
      * @return Success
      */
-    register(body: RegisterInput | undefined, signal?: AbortSignal): Promise<RegisterOutput> {
+    register(body: RegisterInput | undefined): Promise<RegisterOutput> {
         let url_ = this.baseUrl + "/api/services/app/Account/Register";
         url_ = url_.replace(/[?&]$/, "");
 
         const content_ = JSON.stringify(body);
 
-        let options_: AxiosRequestConfig = {
-            data: content_,
+        let options_: RequestInit = {
+            body: content_,
             method: "POST",
-            url: url_,
             headers: {
                 "Content-Type": "application/json",
                 "Accept": "text/plain"
-            },
-            signal
+            }
         };
 
-        return this.instance.request(options_).catch((_error: any) => {
-            if (isAxiosError(_error) && _error.response) {
-                return _error.response;
-            } else {
-                throw _error;
-            }
-        }).then((_response: AxiosResponse) => {
+        return this.http.fetch(url_, options_).then((_response: Response) => {
             return this.processRegister(_response);
         });
     }
 
-    protected processRegister(response: AxiosResponse): Promise<RegisterOutput> {
+    protected processRegister(response: Response): Promise<RegisterOutput> {
         const status = response.status;
-        let _headers: any = {};
-        if (response.headers && typeof response.headers === "object") {
-            for (const k in response.headers) {
-                if (response.headers.hasOwnProperty(k)) {
-                    _headers[k] = response.headers[k];
-                }
-            }
-        }
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
-            const _responseText = response.data;
+            return response.text().then((_responseText) => {
             let result200: any = null;
-            let resultData200  = _responseText;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
             result200 = RegisterOutput.fromJS(resultData200);
-            return Promise.resolve<RegisterOutput>(result200);
-
+            return result200;
+            });
         } else if (status !== 200 && status !== 204) {
-            const _responseText = response.data;
+            return response.text().then((_responseText) => {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
         }
         return Promise.resolve<RegisterOutput>(null as any);
+    }
+}
+
+export class BoardFriendsAndDebt {
+    private http: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> };
+    private baseUrl: string;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+
+    constructor(baseUrl?: string, http?: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> }) {
+        this.http = http ? http : window as any;
+        this.baseUrl = baseUrl ?? "";
     }
 
     /**
      * @param body (optional) 
      * @return Success
      */
-    addMembers(body: BoardAddMemberModel | undefined, signal?: AbortSignal): Promise<BoardModel> {
-        let url_ = this.baseUrl + "/api/services/app/Board/AddMembers";
+    create(body: CreateBoardModel | undefined): Promise<BoardModel> {
+        let url_ = this.baseUrl + "/api/services/app/Board/Create";
         url_ = url_.replace(/[?&]$/, "");
 
         const content_ = JSON.stringify(body);
 
-        let options_: AxiosRequestConfig = {
-            data: content_,
+        let options_: RequestInit = {
+            body: content_,
             method: "POST",
-            url: url_,
             headers: {
                 "Content-Type": "application/json",
                 "Accept": "text/plain"
-            },
-            signal
+            }
         };
 
-        return this.instance.request(options_).catch((_error: any) => {
-            if (isAxiosError(_error) && _error.response) {
-                return _error.response;
-            } else {
-                throw _error;
-            }
-        }).then((_response: AxiosResponse) => {
-            return this.processAddMembers(_response);
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processCreate(_response);
         });
     }
 
-    protected processAddMembers(response: AxiosResponse): Promise<BoardModel> {
+    protected processCreate(response: Response): Promise<BoardModel> {
         const status = response.status;
-        let _headers: any = {};
-        if (response.headers && typeof response.headers === "object") {
-            for (const k in response.headers) {
-                if (response.headers.hasOwnProperty(k)) {
-                    _headers[k] = response.headers[k];
-                }
-            }
-        }
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
-            const _responseText = response.data;
+            return response.text().then((_responseText) => {
             let result200: any = null;
-            let resultData200  = _responseText;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
             result200 = BoardModel.fromJS(resultData200);
-            return Promise.resolve<BoardModel>(result200);
-
+            return result200;
+            });
         } else if (status !== 200 && status !== 204) {
-            const _responseText = response.data;
+            return response.text().then((_responseText) => {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
         }
         return Promise.resolve<BoardModel>(null as any);
     }
@@ -195,54 +161,82 @@ export class FriendsAndDebt {
      * @param body (optional) 
      * @return Success
      */
-    addCards(body: BoardAddCardModel | undefined, signal?: AbortSignal): Promise<BoardModel> {
+    addMembers(body: BoardAddMemberModel | undefined): Promise<BoardModel> {
+        let url_ = this.baseUrl + "/api/services/app/Board/AddMembers";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_: RequestInit = {
+            body: content_,
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "text/plain"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processAddMembers(_response);
+        });
+    }
+
+    protected processAddMembers(response: Response): Promise<BoardModel> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
+            result200 = BoardModel.fromJS(resultData200);
+            return result200;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<BoardModel>(null as any);
+    }
+
+    /**
+     * @param body (optional) 
+     * @return Success
+     */
+    addCards(body: BoardAddCardModel | undefined): Promise<BoardModel> {
         let url_ = this.baseUrl + "/api/services/app/Board/AddCards";
         url_ = url_.replace(/[?&]$/, "");
 
         const content_ = JSON.stringify(body);
 
-        let options_: AxiosRequestConfig = {
-            data: content_,
+        let options_: RequestInit = {
+            body: content_,
             method: "POST",
-            url: url_,
             headers: {
                 "Content-Type": "application/json",
                 "Accept": "text/plain"
-            },
-            signal
+            }
         };
 
-        return this.instance.request(options_).catch((_error: any) => {
-            if (isAxiosError(_error) && _error.response) {
-                return _error.response;
-            } else {
-                throw _error;
-            }
-        }).then((_response: AxiosResponse) => {
+        return this.http.fetch(url_, options_).then((_response: Response) => {
             return this.processAddCards(_response);
         });
     }
 
-    protected processAddCards(response: AxiosResponse): Promise<BoardModel> {
+    protected processAddCards(response: Response): Promise<BoardModel> {
         const status = response.status;
-        let _headers: any = {};
-        if (response.headers && typeof response.headers === "object") {
-            for (const k in response.headers) {
-                if (response.headers.hasOwnProperty(k)) {
-                    _headers[k] = response.headers[k];
-                }
-            }
-        }
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
-            const _responseText = response.data;
+            return response.text().then((_responseText) => {
             let result200: any = null;
-            let resultData200  = _responseText;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
             result200 = BoardModel.fromJS(resultData200);
-            return Promise.resolve<BoardModel>(result200);
-
+            return result200;
+            });
         } else if (status !== 200 && status !== 204) {
-            const _responseText = response.data;
+            return response.text().then((_responseText) => {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
         }
         return Promise.resolve<BoardModel>(null as any);
     }
@@ -251,7 +245,7 @@ export class FriendsAndDebt {
      * @param id (optional) 
      * @return Success
      */
-    get(id: number | undefined, signal?: AbortSignal): Promise<BoardModel> {
+    get(id: number | undefined): Promise<BoardModel> {
         let url_ = this.baseUrl + "/api/services/app/Board/Get?";
         if (id === null)
             throw new Error("The parameter 'id' cannot be null.");
@@ -259,46 +253,32 @@ export class FriendsAndDebt {
             url_ += "Id=" + encodeURIComponent("" + id) + "&";
         url_ = url_.replace(/[?&]$/, "");
 
-        let options_: AxiosRequestConfig = {
+        let options_: RequestInit = {
             method: "GET",
-            url: url_,
             headers: {
                 "Accept": "text/plain"
-            },
-            signal
+            }
         };
 
-        return this.instance.request(options_).catch((_error: any) => {
-            if (isAxiosError(_error) && _error.response) {
-                return _error.response;
-            } else {
-                throw _error;
-            }
-        }).then((_response: AxiosResponse) => {
+        return this.http.fetch(url_, options_).then((_response: Response) => {
             return this.processGet(_response);
         });
     }
 
-    protected processGet(response: AxiosResponse): Promise<BoardModel> {
+    protected processGet(response: Response): Promise<BoardModel> {
         const status = response.status;
-        let _headers: any = {};
-        if (response.headers && typeof response.headers === "object") {
-            for (const k in response.headers) {
-                if (response.headers.hasOwnProperty(k)) {
-                    _headers[k] = response.headers[k];
-                }
-            }
-        }
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
-            const _responseText = response.data;
+            return response.text().then((_responseText) => {
             let result200: any = null;
-            let resultData200  = _responseText;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
             result200 = BoardModel.fromJS(resultData200);
-            return Promise.resolve<BoardModel>(result200);
-
+            return result200;
+            });
         } else if (status !== 200 && status !== 204) {
-            const _responseText = response.data;
+            return response.text().then((_responseText) => {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
         }
         return Promise.resolve<BoardModel>(null as any);
     }
@@ -309,7 +289,7 @@ export class FriendsAndDebt {
      * @param maxResultCount (optional) 
      * @return Success
      */
-    getAll(sorting: string | undefined, skipCount: number | undefined, maxResultCount: number | undefined, signal?: AbortSignal): Promise<BoardModelPagedResultDto> {
+    getAll(sorting: string | undefined, skipCount: number | undefined, maxResultCount: number | undefined): Promise<BoardModelPagedResultDto> {
         let url_ = this.baseUrl + "/api/services/app/Board/GetAll?";
         if (sorting === null)
             throw new Error("The parameter 'sorting' cannot be null.");
@@ -325,46 +305,32 @@ export class FriendsAndDebt {
             url_ += "MaxResultCount=" + encodeURIComponent("" + maxResultCount) + "&";
         url_ = url_.replace(/[?&]$/, "");
 
-        let options_: AxiosRequestConfig = {
+        let options_: RequestInit = {
             method: "GET",
-            url: url_,
             headers: {
                 "Accept": "text/plain"
-            },
-            signal
+            }
         };
 
-        return this.instance.request(options_).catch((_error: any) => {
-            if (isAxiosError(_error) && _error.response) {
-                return _error.response;
-            } else {
-                throw _error;
-            }
-        }).then((_response: AxiosResponse) => {
+        return this.http.fetch(url_, options_).then((_response: Response) => {
             return this.processGetAll(_response);
         });
     }
 
-    protected processGetAll(response: AxiosResponse): Promise<BoardModelPagedResultDto> {
+    protected processGetAll(response: Response): Promise<BoardModelPagedResultDto> {
         const status = response.status;
-        let _headers: any = {};
-        if (response.headers && typeof response.headers === "object") {
-            for (const k in response.headers) {
-                if (response.headers.hasOwnProperty(k)) {
-                    _headers[k] = response.headers[k];
-                }
-            }
-        }
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
-            const _responseText = response.data;
+            return response.text().then((_responseText) => {
             let result200: any = null;
-            let resultData200  = _responseText;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
             result200 = BoardModelPagedResultDto.fromJS(resultData200);
-            return Promise.resolve<BoardModelPagedResultDto>(result200);
-
+            return result200;
+            });
         } else if (status !== 200 && status !== 204) {
-            const _responseText = response.data;
+            return response.text().then((_responseText) => {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
         }
         return Promise.resolve<BoardModelPagedResultDto>(null as any);
     }
@@ -373,110 +339,40 @@ export class FriendsAndDebt {
      * @param body (optional) 
      * @return Success
      */
-    create(body: CreateBoardModel | undefined, signal?: AbortSignal): Promise<BoardModel> {
-        let url_ = this.baseUrl + "/api/services/app/Board/Create";
-        url_ = url_.replace(/[?&]$/, "");
-
-        const content_ = JSON.stringify(body);
-
-        let options_: AxiosRequestConfig = {
-            data: content_,
-            method: "POST",
-            url: url_,
-            headers: {
-                "Content-Type": "application/json",
-                "Accept": "text/plain"
-            },
-            signal
-        };
-
-        return this.instance.request(options_).catch((_error: any) => {
-            if (isAxiosError(_error) && _error.response) {
-                return _error.response;
-            } else {
-                throw _error;
-            }
-        }).then((_response: AxiosResponse) => {
-            return this.processCreate(_response);
-        });
-    }
-
-    protected processCreate(response: AxiosResponse): Promise<BoardModel> {
-        const status = response.status;
-        let _headers: any = {};
-        if (response.headers && typeof response.headers === "object") {
-            for (const k in response.headers) {
-                if (response.headers.hasOwnProperty(k)) {
-                    _headers[k] = response.headers[k];
-                }
-            }
-        }
-        if (status === 200) {
-            const _responseText = response.data;
-            let result200: any = null;
-            let resultData200  = _responseText;
-            result200 = BoardModel.fromJS(resultData200);
-            return Promise.resolve<BoardModel>(result200);
-
-        } else if (status !== 200 && status !== 204) {
-            const _responseText = response.data;
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-        }
-        return Promise.resolve<BoardModel>(null as any);
-    }
-
-    /**
-     * @param body (optional) 
-     * @return Success
-     */
-    update(body: UpdateBoardModel | undefined, signal?: AbortSignal): Promise<BoardModel> {
+    update(body: UpdateBoardModel | undefined): Promise<BoardModel> {
         let url_ = this.baseUrl + "/api/services/app/Board/Update";
         url_ = url_.replace(/[?&]$/, "");
 
         const content_ = JSON.stringify(body);
 
-        let options_: AxiosRequestConfig = {
-            data: content_,
+        let options_: RequestInit = {
+            body: content_,
             method: "PUT",
-            url: url_,
             headers: {
                 "Content-Type": "application/json",
                 "Accept": "text/plain"
-            },
-            signal
+            }
         };
 
-        return this.instance.request(options_).catch((_error: any) => {
-            if (isAxiosError(_error) && _error.response) {
-                return _error.response;
-            } else {
-                throw _error;
-            }
-        }).then((_response: AxiosResponse) => {
+        return this.http.fetch(url_, options_).then((_response: Response) => {
             return this.processUpdate(_response);
         });
     }
 
-    protected processUpdate(response: AxiosResponse): Promise<BoardModel> {
+    protected processUpdate(response: Response): Promise<BoardModel> {
         const status = response.status;
-        let _headers: any = {};
-        if (response.headers && typeof response.headers === "object") {
-            for (const k in response.headers) {
-                if (response.headers.hasOwnProperty(k)) {
-                    _headers[k] = response.headers[k];
-                }
-            }
-        }
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
-            const _responseText = response.data;
+            return response.text().then((_responseText) => {
             let result200: any = null;
-            let resultData200  = _responseText;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
             result200 = BoardModel.fromJS(resultData200);
-            return Promise.resolve<BoardModel>(result200);
-
+            return result200;
+            });
         } else if (status !== 200 && status !== 204) {
-            const _responseText = response.data;
+            return response.text().then((_responseText) => {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
         }
         return Promise.resolve<BoardModel>(null as any);
     }
@@ -485,7 +381,7 @@ export class FriendsAndDebt {
      * @param id (optional) 
      * @return Success
      */
-    delete(id: number | undefined, signal?: AbortSignal): Promise<void> {
+    delete(id: number | undefined): Promise<void> {
         let url_ = this.baseUrl + "/api/services/app/Board/Delete?";
         if (id === null)
             throw new Error("The parameter 'id' cannot be null.");
@@ -493,103 +389,97 @@ export class FriendsAndDebt {
             url_ += "Id=" + encodeURIComponent("" + id) + "&";
         url_ = url_.replace(/[?&]$/, "");
 
-        let options_: AxiosRequestConfig = {
+        let options_: RequestInit = {
             method: "DELETE",
-            url: url_,
             headers: {
-            },
-            signal
+            }
         };
 
-        return this.instance.request(options_).catch((_error: any) => {
-            if (isAxiosError(_error) && _error.response) {
-                return _error.response;
-            } else {
-                throw _error;
-            }
-        }).then((_response: AxiosResponse) => {
+        return this.http.fetch(url_, options_).then((_response: Response) => {
             return this.processDelete(_response);
         });
     }
 
-    protected processDelete(response: AxiosResponse): Promise<void> {
+    protected processDelete(response: Response): Promise<void> {
         const status = response.status;
-        let _headers: any = {};
-        if (response.headers && typeof response.headers === "object") {
-            for (const k in response.headers) {
-                if (response.headers.hasOwnProperty(k)) {
-                    _headers[k] = response.headers[k];
-                }
-            }
-        }
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
-            const _responseText = response.data;
-            return Promise.resolve<void>(null as any);
-
+            return response.text().then((_responseText) => {
+            return;
+            });
         } else if (status !== 200 && status !== 204) {
-            const _responseText = response.data;
+            return response.text().then((_responseText) => {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
         }
         return Promise.resolve<void>(null as any);
+    }
+}
+
+export class ConfigurationFriendsAndDebt {
+    private http: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> };
+    private baseUrl: string;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+
+    constructor(baseUrl?: string, http?: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> }) {
+        this.http = http ? http : window as any;
+        this.baseUrl = baseUrl ?? "";
     }
 
     /**
      * @param body (optional) 
      * @return Success
      */
-    changeUiTheme(body: ChangeUiThemeInput | undefined, signal?: AbortSignal): Promise<void> {
+    changeUiTheme(body: ChangeUiThemeInput | undefined): Promise<void> {
         let url_ = this.baseUrl + "/api/services/app/Configuration/ChangeUiTheme";
         url_ = url_.replace(/[?&]$/, "");
 
         const content_ = JSON.stringify(body);
 
-        let options_: AxiosRequestConfig = {
-            data: content_,
+        let options_: RequestInit = {
+            body: content_,
             method: "POST",
-            url: url_,
             headers: {
                 "Content-Type": "application/json",
-            },
-            signal
+            }
         };
 
-        return this.instance.request(options_).catch((_error: any) => {
-            if (isAxiosError(_error) && _error.response) {
-                return _error.response;
-            } else {
-                throw _error;
-            }
-        }).then((_response: AxiosResponse) => {
+        return this.http.fetch(url_, options_).then((_response: Response) => {
             return this.processChangeUiTheme(_response);
         });
     }
 
-    protected processChangeUiTheme(response: AxiosResponse): Promise<void> {
+    protected processChangeUiTheme(response: Response): Promise<void> {
         const status = response.status;
-        let _headers: any = {};
-        if (response.headers && typeof response.headers === "object") {
-            for (const k in response.headers) {
-                if (response.headers.hasOwnProperty(k)) {
-                    _headers[k] = response.headers[k];
-                }
-            }
-        }
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
-            const _responseText = response.data;
-            return Promise.resolve<void>(null as any);
-
+            return response.text().then((_responseText) => {
+            return;
+            });
         } else if (status !== 200 && status !== 204) {
-            const _responseText = response.data;
+            return response.text().then((_responseText) => {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
         }
         return Promise.resolve<void>(null as any);
+    }
+}
+
+export class FriendListFriendsAndDebt {
+    private http: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> };
+    private baseUrl: string;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+
+    constructor(baseUrl?: string, http?: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> }) {
+        this.http = http ? http : window as any;
+        this.baseUrl = baseUrl ?? "";
     }
 
     /**
      * @param id (optional) 
      * @return Success
      */
-    approve(id: number | undefined, signal?: AbortSignal): Promise<void> {
+    approve(id: number | undefined): Promise<void> {
         let url_ = this.baseUrl + "/api/services/app/FriendList/Approve?";
         if (id === null)
             throw new Error("The parameter 'id' cannot be null.");
@@ -597,42 +487,28 @@ export class FriendsAndDebt {
             url_ += "id=" + encodeURIComponent("" + id) + "&";
         url_ = url_.replace(/[?&]$/, "");
 
-        let options_: AxiosRequestConfig = {
+        let options_: RequestInit = {
             method: "POST",
-            url: url_,
             headers: {
-            },
-            signal
+            }
         };
 
-        return this.instance.request(options_).catch((_error: any) => {
-            if (isAxiosError(_error) && _error.response) {
-                return _error.response;
-            } else {
-                throw _error;
-            }
-        }).then((_response: AxiosResponse) => {
+        return this.http.fetch(url_, options_).then((_response: Response) => {
             return this.processApprove(_response);
         });
     }
 
-    protected processApprove(response: AxiosResponse): Promise<void> {
+    protected processApprove(response: Response): Promise<void> {
         const status = response.status;
-        let _headers: any = {};
-        if (response.headers && typeof response.headers === "object") {
-            for (const k in response.headers) {
-                if (response.headers.hasOwnProperty(k)) {
-                    _headers[k] = response.headers[k];
-                }
-            }
-        }
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
-            const _responseText = response.data;
-            return Promise.resolve<void>(null as any);
-
+            return response.text().then((_responseText) => {
+            return;
+            });
         } else if (status !== 200 && status !== 204) {
-            const _responseText = response.data;
+            return response.text().then((_responseText) => {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
         }
         return Promise.resolve<void>(null as any);
     }
@@ -641,7 +517,7 @@ export class FriendsAndDebt {
      * @param id (optional) 
      * @return Success
      */
-    get2(id: number | undefined, signal?: AbortSignal): Promise<FriendModel> {
+    get(id: number | undefined): Promise<FriendModel> {
         let url_ = this.baseUrl + "/api/services/app/FriendList/Get?";
         if (id === null)
             throw new Error("The parameter 'id' cannot be null.");
@@ -649,46 +525,32 @@ export class FriendsAndDebt {
             url_ += "Id=" + encodeURIComponent("" + id) + "&";
         url_ = url_.replace(/[?&]$/, "");
 
-        let options_: AxiosRequestConfig = {
+        let options_: RequestInit = {
             method: "GET",
-            url: url_,
             headers: {
                 "Accept": "text/plain"
-            },
-            signal
+            }
         };
 
-        return this.instance.request(options_).catch((_error: any) => {
-            if (isAxiosError(_error) && _error.response) {
-                return _error.response;
-            } else {
-                throw _error;
-            }
-        }).then((_response: AxiosResponse) => {
-            return this.processGet2(_response);
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processGet(_response);
         });
     }
 
-    protected processGet2(response: AxiosResponse): Promise<FriendModel> {
+    protected processGet(response: Response): Promise<FriendModel> {
         const status = response.status;
-        let _headers: any = {};
-        if (response.headers && typeof response.headers === "object") {
-            for (const k in response.headers) {
-                if (response.headers.hasOwnProperty(k)) {
-                    _headers[k] = response.headers[k];
-                }
-            }
-        }
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
-            const _responseText = response.data;
+            return response.text().then((_responseText) => {
             let result200: any = null;
-            let resultData200  = _responseText;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
             result200 = FriendModel.fromJS(resultData200);
-            return Promise.resolve<FriendModel>(result200);
-
+            return result200;
+            });
         } else if (status !== 200 && status !== 204) {
-            const _responseText = response.data;
+            return response.text().then((_responseText) => {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
         }
         return Promise.resolve<FriendModel>(null as any);
     }
@@ -699,7 +561,7 @@ export class FriendsAndDebt {
      * @param maxResultCount (optional) 
      * @return Success
      */
-    getAll2(sorting: string | undefined, skipCount: number | undefined, maxResultCount: number | undefined, signal?: AbortSignal): Promise<FriendModelPagedResultDto> {
+    getAll(sorting: string | undefined, skipCount: number | undefined, maxResultCount: number | undefined): Promise<FriendModelPagedResultDto> {
         let url_ = this.baseUrl + "/api/services/app/FriendList/GetAll?";
         if (sorting === null)
             throw new Error("The parameter 'sorting' cannot be null.");
@@ -715,46 +577,32 @@ export class FriendsAndDebt {
             url_ += "MaxResultCount=" + encodeURIComponent("" + maxResultCount) + "&";
         url_ = url_.replace(/[?&]$/, "");
 
-        let options_: AxiosRequestConfig = {
+        let options_: RequestInit = {
             method: "GET",
-            url: url_,
             headers: {
                 "Accept": "text/plain"
-            },
-            signal
+            }
         };
 
-        return this.instance.request(options_).catch((_error: any) => {
-            if (isAxiosError(_error) && _error.response) {
-                return _error.response;
-            } else {
-                throw _error;
-            }
-        }).then((_response: AxiosResponse) => {
-            return this.processGetAll2(_response);
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processGetAll(_response);
         });
     }
 
-    protected processGetAll2(response: AxiosResponse): Promise<FriendModelPagedResultDto> {
+    protected processGetAll(response: Response): Promise<FriendModelPagedResultDto> {
         const status = response.status;
-        let _headers: any = {};
-        if (response.headers && typeof response.headers === "object") {
-            for (const k in response.headers) {
-                if (response.headers.hasOwnProperty(k)) {
-                    _headers[k] = response.headers[k];
-                }
-            }
-        }
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
-            const _responseText = response.data;
+            return response.text().then((_responseText) => {
             let result200: any = null;
-            let resultData200  = _responseText;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
             result200 = FriendModelPagedResultDto.fromJS(resultData200);
-            return Promise.resolve<FriendModelPagedResultDto>(result200);
-
+            return result200;
+            });
         } else if (status !== 200 && status !== 204) {
-            const _responseText = response.data;
+            return response.text().then((_responseText) => {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
         }
         return Promise.resolve<FriendModelPagedResultDto>(null as any);
     }
@@ -763,54 +611,40 @@ export class FriendsAndDebt {
      * @param body (optional) 
      * @return Success
      */
-    create2(body: CreateFriendModel | undefined, signal?: AbortSignal): Promise<FriendModel> {
+    create(body: CreateFriendModel | undefined): Promise<FriendModel> {
         let url_ = this.baseUrl + "/api/services/app/FriendList/Create";
         url_ = url_.replace(/[?&]$/, "");
 
         const content_ = JSON.stringify(body);
 
-        let options_: AxiosRequestConfig = {
-            data: content_,
+        let options_: RequestInit = {
+            body: content_,
             method: "POST",
-            url: url_,
             headers: {
                 "Content-Type": "application/json",
                 "Accept": "text/plain"
-            },
-            signal
+            }
         };
 
-        return this.instance.request(options_).catch((_error: any) => {
-            if (isAxiosError(_error) && _error.response) {
-                return _error.response;
-            } else {
-                throw _error;
-            }
-        }).then((_response: AxiosResponse) => {
-            return this.processCreate2(_response);
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processCreate(_response);
         });
     }
 
-    protected processCreate2(response: AxiosResponse): Promise<FriendModel> {
+    protected processCreate(response: Response): Promise<FriendModel> {
         const status = response.status;
-        let _headers: any = {};
-        if (response.headers && typeof response.headers === "object") {
-            for (const k in response.headers) {
-                if (response.headers.hasOwnProperty(k)) {
-                    _headers[k] = response.headers[k];
-                }
-            }
-        }
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
-            const _responseText = response.data;
+            return response.text().then((_responseText) => {
             let result200: any = null;
-            let resultData200  = _responseText;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
             result200 = FriendModel.fromJS(resultData200);
-            return Promise.resolve<FriendModel>(result200);
-
+            return result200;
+            });
         } else if (status !== 200 && status !== 204) {
-            const _responseText = response.data;
+            return response.text().then((_responseText) => {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
         }
         return Promise.resolve<FriendModel>(null as any);
     }
@@ -819,54 +653,40 @@ export class FriendsAndDebt {
      * @param body (optional) 
      * @return Success
      */
-    update2(body: UpdateFriendModel | undefined, signal?: AbortSignal): Promise<FriendModel> {
+    update(body: UpdateFriendModel | undefined): Promise<FriendModel> {
         let url_ = this.baseUrl + "/api/services/app/FriendList/Update";
         url_ = url_.replace(/[?&]$/, "");
 
         const content_ = JSON.stringify(body);
 
-        let options_: AxiosRequestConfig = {
-            data: content_,
+        let options_: RequestInit = {
+            body: content_,
             method: "PUT",
-            url: url_,
             headers: {
                 "Content-Type": "application/json",
                 "Accept": "text/plain"
-            },
-            signal
+            }
         };
 
-        return this.instance.request(options_).catch((_error: any) => {
-            if (isAxiosError(_error) && _error.response) {
-                return _error.response;
-            } else {
-                throw _error;
-            }
-        }).then((_response: AxiosResponse) => {
-            return this.processUpdate2(_response);
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processUpdate(_response);
         });
     }
 
-    protected processUpdate2(response: AxiosResponse): Promise<FriendModel> {
+    protected processUpdate(response: Response): Promise<FriendModel> {
         const status = response.status;
-        let _headers: any = {};
-        if (response.headers && typeof response.headers === "object") {
-            for (const k in response.headers) {
-                if (response.headers.hasOwnProperty(k)) {
-                    _headers[k] = response.headers[k];
-                }
-            }
-        }
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
-            const _responseText = response.data;
+            return response.text().then((_responseText) => {
             let result200: any = null;
-            let resultData200  = _responseText;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
             result200 = FriendModel.fromJS(resultData200);
-            return Promise.resolve<FriendModel>(result200);
-
+            return result200;
+            });
         } else if (status !== 200 && status !== 204) {
-            const _responseText = response.data;
+            return response.text().then((_responseText) => {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
         }
         return Promise.resolve<FriendModel>(null as any);
     }
@@ -875,7 +695,7 @@ export class FriendsAndDebt {
      * @param id (optional) 
      * @return Success
      */
-    delete2(id: number | undefined, signal?: AbortSignal): Promise<void> {
+    delete(id: number | undefined): Promise<void> {
         let url_ = this.baseUrl + "/api/services/app/FriendList/Delete?";
         if (id === null)
             throw new Error("The parameter 'id' cannot be null.");
@@ -883,98 +703,81 @@ export class FriendsAndDebt {
             url_ += "Id=" + encodeURIComponent("" + id) + "&";
         url_ = url_.replace(/[?&]$/, "");
 
-        let options_: AxiosRequestConfig = {
+        let options_: RequestInit = {
             method: "DELETE",
-            url: url_,
             headers: {
-            },
-            signal
+            }
         };
 
-        return this.instance.request(options_).catch((_error: any) => {
-            if (isAxiosError(_error) && _error.response) {
-                return _error.response;
-            } else {
-                throw _error;
-            }
-        }).then((_response: AxiosResponse) => {
-            return this.processDelete2(_response);
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processDelete(_response);
         });
     }
 
-    protected processDelete2(response: AxiosResponse): Promise<void> {
+    protected processDelete(response: Response): Promise<void> {
         const status = response.status;
-        let _headers: any = {};
-        if (response.headers && typeof response.headers === "object") {
-            for (const k in response.headers) {
-                if (response.headers.hasOwnProperty(k)) {
-                    _headers[k] = response.headers[k];
-                }
-            }
-        }
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
-            const _responseText = response.data;
-            return Promise.resolve<void>(null as any);
-
+            return response.text().then((_responseText) => {
+            return;
+            });
         } else if (status !== 200 && status !== 204) {
-            const _responseText = response.data;
+            return response.text().then((_responseText) => {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
         }
         return Promise.resolve<void>(null as any);
+    }
+}
+
+export class RoleFriendsAndDebt {
+    private http: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> };
+    private baseUrl: string;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+
+    constructor(baseUrl?: string, http?: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> }) {
+        this.http = http ? http : window as any;
+        this.baseUrl = baseUrl ?? "";
     }
 
     /**
      * @param body (optional) 
      * @return Success
      */
-    create3(body: CreateRoleDto | undefined, signal?: AbortSignal): Promise<RoleDto> {
+    create(body: CreateRoleDto | undefined): Promise<RoleDto> {
         let url_ = this.baseUrl + "/api/services/app/Role/Create";
         url_ = url_.replace(/[?&]$/, "");
 
         const content_ = JSON.stringify(body);
 
-        let options_: AxiosRequestConfig = {
-            data: content_,
+        let options_: RequestInit = {
+            body: content_,
             method: "POST",
-            url: url_,
             headers: {
                 "Content-Type": "application/json",
                 "Accept": "text/plain"
-            },
-            signal
+            }
         };
 
-        return this.instance.request(options_).catch((_error: any) => {
-            if (isAxiosError(_error) && _error.response) {
-                return _error.response;
-            } else {
-                throw _error;
-            }
-        }).then((_response: AxiosResponse) => {
-            return this.processCreate3(_response);
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processCreate(_response);
         });
     }
 
-    protected processCreate3(response: AxiosResponse): Promise<RoleDto> {
+    protected processCreate(response: Response): Promise<RoleDto> {
         const status = response.status;
-        let _headers: any = {};
-        if (response.headers && typeof response.headers === "object") {
-            for (const k in response.headers) {
-                if (response.headers.hasOwnProperty(k)) {
-                    _headers[k] = response.headers[k];
-                }
-            }
-        }
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
-            const _responseText = response.data;
+            return response.text().then((_responseText) => {
             let result200: any = null;
-            let resultData200  = _responseText;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
             result200 = RoleDto.fromJS(resultData200);
-            return Promise.resolve<RoleDto>(result200);
-
+            return result200;
+            });
         } else if (status !== 200 && status !== 204) {
-            const _responseText = response.data;
+            return response.text().then((_responseText) => {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
         }
         return Promise.resolve<RoleDto>(null as any);
     }
@@ -983,7 +786,7 @@ export class FriendsAndDebt {
      * @param permission (optional) 
      * @return Success
      */
-    getRoles(permission: string | undefined, signal?: AbortSignal): Promise<RoleListDtoListResultDto> {
+    getRoles(permission: string | undefined): Promise<RoleListDtoListResultDto> {
         let url_ = this.baseUrl + "/api/services/app/Role/GetRoles?";
         if (permission === null)
             throw new Error("The parameter 'permission' cannot be null.");
@@ -991,46 +794,32 @@ export class FriendsAndDebt {
             url_ += "Permission=" + encodeURIComponent("" + permission) + "&";
         url_ = url_.replace(/[?&]$/, "");
 
-        let options_: AxiosRequestConfig = {
+        let options_: RequestInit = {
             method: "GET",
-            url: url_,
             headers: {
                 "Accept": "text/plain"
-            },
-            signal
+            }
         };
 
-        return this.instance.request(options_).catch((_error: any) => {
-            if (isAxiosError(_error) && _error.response) {
-                return _error.response;
-            } else {
-                throw _error;
-            }
-        }).then((_response: AxiosResponse) => {
+        return this.http.fetch(url_, options_).then((_response: Response) => {
             return this.processGetRoles(_response);
         });
     }
 
-    protected processGetRoles(response: AxiosResponse): Promise<RoleListDtoListResultDto> {
+    protected processGetRoles(response: Response): Promise<RoleListDtoListResultDto> {
         const status = response.status;
-        let _headers: any = {};
-        if (response.headers && typeof response.headers === "object") {
-            for (const k in response.headers) {
-                if (response.headers.hasOwnProperty(k)) {
-                    _headers[k] = response.headers[k];
-                }
-            }
-        }
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
-            const _responseText = response.data;
+            return response.text().then((_responseText) => {
             let result200: any = null;
-            let resultData200  = _responseText;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
             result200 = RoleListDtoListResultDto.fromJS(resultData200);
-            return Promise.resolve<RoleListDtoListResultDto>(result200);
-
+            return result200;
+            });
         } else if (status !== 200 && status !== 204) {
-            const _responseText = response.data;
+            return response.text().then((_responseText) => {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
         }
         return Promise.resolve<RoleListDtoListResultDto>(null as any);
     }
@@ -1039,54 +828,40 @@ export class FriendsAndDebt {
      * @param body (optional) 
      * @return Success
      */
-    update3(body: RoleDto | undefined, signal?: AbortSignal): Promise<RoleDto> {
+    update(body: RoleDto | undefined): Promise<RoleDto> {
         let url_ = this.baseUrl + "/api/services/app/Role/Update";
         url_ = url_.replace(/[?&]$/, "");
 
         const content_ = JSON.stringify(body);
 
-        let options_: AxiosRequestConfig = {
-            data: content_,
+        let options_: RequestInit = {
+            body: content_,
             method: "PUT",
-            url: url_,
             headers: {
                 "Content-Type": "application/json",
                 "Accept": "text/plain"
-            },
-            signal
+            }
         };
 
-        return this.instance.request(options_).catch((_error: any) => {
-            if (isAxiosError(_error) && _error.response) {
-                return _error.response;
-            } else {
-                throw _error;
-            }
-        }).then((_response: AxiosResponse) => {
-            return this.processUpdate3(_response);
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processUpdate(_response);
         });
     }
 
-    protected processUpdate3(response: AxiosResponse): Promise<RoleDto> {
+    protected processUpdate(response: Response): Promise<RoleDto> {
         const status = response.status;
-        let _headers: any = {};
-        if (response.headers && typeof response.headers === "object") {
-            for (const k in response.headers) {
-                if (response.headers.hasOwnProperty(k)) {
-                    _headers[k] = response.headers[k];
-                }
-            }
-        }
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
-            const _responseText = response.data;
+            return response.text().then((_responseText) => {
             let result200: any = null;
-            let resultData200  = _responseText;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
             result200 = RoleDto.fromJS(resultData200);
-            return Promise.resolve<RoleDto>(result200);
-
+            return result200;
+            });
         } else if (status !== 200 && status !== 204) {
-            const _responseText = response.data;
+            return response.text().then((_responseText) => {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
         }
         return Promise.resolve<RoleDto>(null as any);
     }
@@ -1095,7 +870,7 @@ export class FriendsAndDebt {
      * @param id (optional) 
      * @return Success
      */
-    delete3(id: number | undefined, signal?: AbortSignal): Promise<void> {
+    delete(id: number | undefined): Promise<void> {
         let url_ = this.baseUrl + "/api/services/app/Role/Delete?";
         if (id === null)
             throw new Error("The parameter 'id' cannot be null.");
@@ -1103,42 +878,28 @@ export class FriendsAndDebt {
             url_ += "Id=" + encodeURIComponent("" + id) + "&";
         url_ = url_.replace(/[?&]$/, "");
 
-        let options_: AxiosRequestConfig = {
+        let options_: RequestInit = {
             method: "DELETE",
-            url: url_,
             headers: {
-            },
-            signal
+            }
         };
 
-        return this.instance.request(options_).catch((_error: any) => {
-            if (isAxiosError(_error) && _error.response) {
-                return _error.response;
-            } else {
-                throw _error;
-            }
-        }).then((_response: AxiosResponse) => {
-            return this.processDelete3(_response);
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processDelete(_response);
         });
     }
 
-    protected processDelete3(response: AxiosResponse): Promise<void> {
+    protected processDelete(response: Response): Promise<void> {
         const status = response.status;
-        let _headers: any = {};
-        if (response.headers && typeof response.headers === "object") {
-            for (const k in response.headers) {
-                if (response.headers.hasOwnProperty(k)) {
-                    _headers[k] = response.headers[k];
-                }
-            }
-        }
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
-            const _responseText = response.data;
-            return Promise.resolve<void>(null as any);
-
+            return response.text().then((_responseText) => {
+            return;
+            });
         } else if (status !== 200 && status !== 204) {
-            const _responseText = response.data;
+            return response.text().then((_responseText) => {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
         }
         return Promise.resolve<void>(null as any);
     }
@@ -1146,50 +907,36 @@ export class FriendsAndDebt {
     /**
      * @return Success
      */
-    getAllPermissions(signal?: AbortSignal): Promise<PermissionDtoListResultDto> {
+    getAllPermissions(): Promise<PermissionDtoListResultDto> {
         let url_ = this.baseUrl + "/api/services/app/Role/GetAllPermissions";
         url_ = url_.replace(/[?&]$/, "");
 
-        let options_: AxiosRequestConfig = {
+        let options_: RequestInit = {
             method: "GET",
-            url: url_,
             headers: {
                 "Accept": "text/plain"
-            },
-            signal
+            }
         };
 
-        return this.instance.request(options_).catch((_error: any) => {
-            if (isAxiosError(_error) && _error.response) {
-                return _error.response;
-            } else {
-                throw _error;
-            }
-        }).then((_response: AxiosResponse) => {
+        return this.http.fetch(url_, options_).then((_response: Response) => {
             return this.processGetAllPermissions(_response);
         });
     }
 
-    protected processGetAllPermissions(response: AxiosResponse): Promise<PermissionDtoListResultDto> {
+    protected processGetAllPermissions(response: Response): Promise<PermissionDtoListResultDto> {
         const status = response.status;
-        let _headers: any = {};
-        if (response.headers && typeof response.headers === "object") {
-            for (const k in response.headers) {
-                if (response.headers.hasOwnProperty(k)) {
-                    _headers[k] = response.headers[k];
-                }
-            }
-        }
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
-            const _responseText = response.data;
+            return response.text().then((_responseText) => {
             let result200: any = null;
-            let resultData200  = _responseText;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
             result200 = PermissionDtoListResultDto.fromJS(resultData200);
-            return Promise.resolve<PermissionDtoListResultDto>(result200);
-
+            return result200;
+            });
         } else if (status !== 200 && status !== 204) {
-            const _responseText = response.data;
+            return response.text().then((_responseText) => {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
         }
         return Promise.resolve<PermissionDtoListResultDto>(null as any);
     }
@@ -1198,7 +945,7 @@ export class FriendsAndDebt {
      * @param id (optional) 
      * @return Success
      */
-    getRoleForEdit(id: number | undefined, signal?: AbortSignal): Promise<GetRoleForEditOutput> {
+    getRoleForEdit(id: number | undefined): Promise<GetRoleForEditOutput> {
         let url_ = this.baseUrl + "/api/services/app/Role/GetRoleForEdit?";
         if (id === null)
             throw new Error("The parameter 'id' cannot be null.");
@@ -1206,46 +953,32 @@ export class FriendsAndDebt {
             url_ += "Id=" + encodeURIComponent("" + id) + "&";
         url_ = url_.replace(/[?&]$/, "");
 
-        let options_: AxiosRequestConfig = {
+        let options_: RequestInit = {
             method: "GET",
-            url: url_,
             headers: {
                 "Accept": "text/plain"
-            },
-            signal
+            }
         };
 
-        return this.instance.request(options_).catch((_error: any) => {
-            if (isAxiosError(_error) && _error.response) {
-                return _error.response;
-            } else {
-                throw _error;
-            }
-        }).then((_response: AxiosResponse) => {
+        return this.http.fetch(url_, options_).then((_response: Response) => {
             return this.processGetRoleForEdit(_response);
         });
     }
 
-    protected processGetRoleForEdit(response: AxiosResponse): Promise<GetRoleForEditOutput> {
+    protected processGetRoleForEdit(response: Response): Promise<GetRoleForEditOutput> {
         const status = response.status;
-        let _headers: any = {};
-        if (response.headers && typeof response.headers === "object") {
-            for (const k in response.headers) {
-                if (response.headers.hasOwnProperty(k)) {
-                    _headers[k] = response.headers[k];
-                }
-            }
-        }
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
-            const _responseText = response.data;
+            return response.text().then((_responseText) => {
             let result200: any = null;
-            let resultData200  = _responseText;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
             result200 = GetRoleForEditOutput.fromJS(resultData200);
-            return Promise.resolve<GetRoleForEditOutput>(result200);
-
+            return result200;
+            });
         } else if (status !== 200 && status !== 204) {
-            const _responseText = response.data;
+            return response.text().then((_responseText) => {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
         }
         return Promise.resolve<GetRoleForEditOutput>(null as any);
     }
@@ -1254,7 +987,7 @@ export class FriendsAndDebt {
      * @param id (optional) 
      * @return Success
      */
-    get3(id: number | undefined, signal?: AbortSignal): Promise<RoleDto> {
+    get(id: number | undefined): Promise<RoleDto> {
         let url_ = this.baseUrl + "/api/services/app/Role/Get?";
         if (id === null)
             throw new Error("The parameter 'id' cannot be null.");
@@ -1262,46 +995,32 @@ export class FriendsAndDebt {
             url_ += "Id=" + encodeURIComponent("" + id) + "&";
         url_ = url_.replace(/[?&]$/, "");
 
-        let options_: AxiosRequestConfig = {
+        let options_: RequestInit = {
             method: "GET",
-            url: url_,
             headers: {
                 "Accept": "text/plain"
-            },
-            signal
+            }
         };
 
-        return this.instance.request(options_).catch((_error: any) => {
-            if (isAxiosError(_error) && _error.response) {
-                return _error.response;
-            } else {
-                throw _error;
-            }
-        }).then((_response: AxiosResponse) => {
-            return this.processGet3(_response);
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processGet(_response);
         });
     }
 
-    protected processGet3(response: AxiosResponse): Promise<RoleDto> {
+    protected processGet(response: Response): Promise<RoleDto> {
         const status = response.status;
-        let _headers: any = {};
-        if (response.headers && typeof response.headers === "object") {
-            for (const k in response.headers) {
-                if (response.headers.hasOwnProperty(k)) {
-                    _headers[k] = response.headers[k];
-                }
-            }
-        }
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
-            const _responseText = response.data;
+            return response.text().then((_responseText) => {
             let result200: any = null;
-            let resultData200  = _responseText;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
             result200 = RoleDto.fromJS(resultData200);
-            return Promise.resolve<RoleDto>(result200);
-
+            return result200;
+            });
         } else if (status !== 200 && status !== 204) {
-            const _responseText = response.data;
+            return response.text().then((_responseText) => {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
         }
         return Promise.resolve<RoleDto>(null as any);
     }
@@ -1312,7 +1031,7 @@ export class FriendsAndDebt {
      * @param maxResultCount (optional) 
      * @return Success
      */
-    getAll3(keyword: string | undefined, skipCount: number | undefined, maxResultCount: number | undefined, signal?: AbortSignal): Promise<RoleDtoPagedResultDto> {
+    getAll(keyword: string | undefined, skipCount: number | undefined, maxResultCount: number | undefined): Promise<RoleDtoPagedResultDto> {
         let url_ = this.baseUrl + "/api/services/app/Role/GetAll?";
         if (keyword === null)
             throw new Error("The parameter 'keyword' cannot be null.");
@@ -1328,153 +1047,133 @@ export class FriendsAndDebt {
             url_ += "MaxResultCount=" + encodeURIComponent("" + maxResultCount) + "&";
         url_ = url_.replace(/[?&]$/, "");
 
-        let options_: AxiosRequestConfig = {
+        let options_: RequestInit = {
             method: "GET",
-            url: url_,
             headers: {
                 "Accept": "text/plain"
-            },
-            signal
+            }
         };
 
-        return this.instance.request(options_).catch((_error: any) => {
-            if (isAxiosError(_error) && _error.response) {
-                return _error.response;
-            } else {
-                throw _error;
-            }
-        }).then((_response: AxiosResponse) => {
-            return this.processGetAll3(_response);
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processGetAll(_response);
         });
     }
 
-    protected processGetAll3(response: AxiosResponse): Promise<RoleDtoPagedResultDto> {
+    protected processGetAll(response: Response): Promise<RoleDtoPagedResultDto> {
         const status = response.status;
-        let _headers: any = {};
-        if (response.headers && typeof response.headers === "object") {
-            for (const k in response.headers) {
-                if (response.headers.hasOwnProperty(k)) {
-                    _headers[k] = response.headers[k];
-                }
-            }
-        }
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
-            const _responseText = response.data;
+            return response.text().then((_responseText) => {
             let result200: any = null;
-            let resultData200  = _responseText;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
             result200 = RoleDtoPagedResultDto.fromJS(resultData200);
-            return Promise.resolve<RoleDtoPagedResultDto>(result200);
-
+            return result200;
+            });
         } else if (status !== 200 && status !== 204) {
-            const _responseText = response.data;
+            return response.text().then((_responseText) => {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
         }
         return Promise.resolve<RoleDtoPagedResultDto>(null as any);
+    }
+}
+
+export class SessionFriendsAndDebt {
+    private http: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> };
+    private baseUrl: string;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+
+    constructor(baseUrl?: string, http?: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> }) {
+        this.http = http ? http : window as any;
+        this.baseUrl = baseUrl ?? "";
     }
 
     /**
      * @return Success
      */
-    getCurrentLoginInformations(signal?: AbortSignal): Promise<GetCurrentLoginInformationsOutput> {
+    getCurrentLoginInformations(): Promise<GetCurrentLoginInformationsOutput> {
         let url_ = this.baseUrl + "/api/services/app/Session/GetCurrentLoginInformations";
         url_ = url_.replace(/[?&]$/, "");
 
-        let options_: AxiosRequestConfig = {
+        let options_: RequestInit = {
             method: "GET",
-            url: url_,
             headers: {
                 "Accept": "text/plain"
-            },
-            signal
+            }
         };
 
-        return this.instance.request(options_).catch((_error: any) => {
-            if (isAxiosError(_error) && _error.response) {
-                return _error.response;
-            } else {
-                throw _error;
-            }
-        }).then((_response: AxiosResponse) => {
+        return this.http.fetch(url_, options_).then((_response: Response) => {
             return this.processGetCurrentLoginInformations(_response);
         });
     }
 
-    protected processGetCurrentLoginInformations(response: AxiosResponse): Promise<GetCurrentLoginInformationsOutput> {
+    protected processGetCurrentLoginInformations(response: Response): Promise<GetCurrentLoginInformationsOutput> {
         const status = response.status;
-        let _headers: any = {};
-        if (response.headers && typeof response.headers === "object") {
-            for (const k in response.headers) {
-                if (response.headers.hasOwnProperty(k)) {
-                    _headers[k] = response.headers[k];
-                }
-            }
-        }
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
-            const _responseText = response.data;
+            return response.text().then((_responseText) => {
             let result200: any = null;
-            let resultData200  = _responseText;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
             result200 = GetCurrentLoginInformationsOutput.fromJS(resultData200);
-            return Promise.resolve<GetCurrentLoginInformationsOutput>(result200);
-
+            return result200;
+            });
         } else if (status !== 200 && status !== 204) {
-            const _responseText = response.data;
+            return response.text().then((_responseText) => {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
         }
         return Promise.resolve<GetCurrentLoginInformationsOutput>(null as any);
+    }
+}
+
+export class TenantFriendsAndDebt {
+    private http: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> };
+    private baseUrl: string;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+
+    constructor(baseUrl?: string, http?: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> }) {
+        this.http = http ? http : window as any;
+        this.baseUrl = baseUrl ?? "";
     }
 
     /**
      * @param body (optional) 
      * @return Success
      */
-    create4(body: CreateTenantDto | undefined, signal?: AbortSignal): Promise<TenantDto> {
+    create(body: CreateTenantDto | undefined): Promise<TenantDto> {
         let url_ = this.baseUrl + "/api/services/app/Tenant/Create";
         url_ = url_.replace(/[?&]$/, "");
 
         const content_ = JSON.stringify(body);
 
-        let options_: AxiosRequestConfig = {
-            data: content_,
+        let options_: RequestInit = {
+            body: content_,
             method: "POST",
-            url: url_,
             headers: {
                 "Content-Type": "application/json",
                 "Accept": "text/plain"
-            },
-            signal
+            }
         };
 
-        return this.instance.request(options_).catch((_error: any) => {
-            if (isAxiosError(_error) && _error.response) {
-                return _error.response;
-            } else {
-                throw _error;
-            }
-        }).then((_response: AxiosResponse) => {
-            return this.processCreate4(_response);
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processCreate(_response);
         });
     }
 
-    protected processCreate4(response: AxiosResponse): Promise<TenantDto> {
+    protected processCreate(response: Response): Promise<TenantDto> {
         const status = response.status;
-        let _headers: any = {};
-        if (response.headers && typeof response.headers === "object") {
-            for (const k in response.headers) {
-                if (response.headers.hasOwnProperty(k)) {
-                    _headers[k] = response.headers[k];
-                }
-            }
-        }
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
-            const _responseText = response.data;
+            return response.text().then((_responseText) => {
             let result200: any = null;
-            let resultData200  = _responseText;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
             result200 = TenantDto.fromJS(resultData200);
-            return Promise.resolve<TenantDto>(result200);
-
+            return result200;
+            });
         } else if (status !== 200 && status !== 204) {
-            const _responseText = response.data;
+            return response.text().then((_responseText) => {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
         }
         return Promise.resolve<TenantDto>(null as any);
     }
@@ -1483,7 +1182,7 @@ export class FriendsAndDebt {
      * @param id (optional) 
      * @return Success
      */
-    delete4(id: number | undefined, signal?: AbortSignal): Promise<void> {
+    delete(id: number | undefined): Promise<void> {
         let url_ = this.baseUrl + "/api/services/app/Tenant/Delete?";
         if (id === null)
             throw new Error("The parameter 'id' cannot be null.");
@@ -1491,42 +1190,28 @@ export class FriendsAndDebt {
             url_ += "Id=" + encodeURIComponent("" + id) + "&";
         url_ = url_.replace(/[?&]$/, "");
 
-        let options_: AxiosRequestConfig = {
+        let options_: RequestInit = {
             method: "DELETE",
-            url: url_,
             headers: {
-            },
-            signal
+            }
         };
 
-        return this.instance.request(options_).catch((_error: any) => {
-            if (isAxiosError(_error) && _error.response) {
-                return _error.response;
-            } else {
-                throw _error;
-            }
-        }).then((_response: AxiosResponse) => {
-            return this.processDelete4(_response);
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processDelete(_response);
         });
     }
 
-    protected processDelete4(response: AxiosResponse): Promise<void> {
+    protected processDelete(response: Response): Promise<void> {
         const status = response.status;
-        let _headers: any = {};
-        if (response.headers && typeof response.headers === "object") {
-            for (const k in response.headers) {
-                if (response.headers.hasOwnProperty(k)) {
-                    _headers[k] = response.headers[k];
-                }
-            }
-        }
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
-            const _responseText = response.data;
-            return Promise.resolve<void>(null as any);
-
+            return response.text().then((_responseText) => {
+            return;
+            });
         } else if (status !== 200 && status !== 204) {
-            const _responseText = response.data;
+            return response.text().then((_responseText) => {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
         }
         return Promise.resolve<void>(null as any);
     }
@@ -1535,7 +1220,7 @@ export class FriendsAndDebt {
      * @param id (optional) 
      * @return Success
      */
-    get4(id: number | undefined, signal?: AbortSignal): Promise<TenantDto> {
+    get(id: number | undefined): Promise<TenantDto> {
         let url_ = this.baseUrl + "/api/services/app/Tenant/Get?";
         if (id === null)
             throw new Error("The parameter 'id' cannot be null.");
@@ -1543,46 +1228,32 @@ export class FriendsAndDebt {
             url_ += "Id=" + encodeURIComponent("" + id) + "&";
         url_ = url_.replace(/[?&]$/, "");
 
-        let options_: AxiosRequestConfig = {
+        let options_: RequestInit = {
             method: "GET",
-            url: url_,
             headers: {
                 "Accept": "text/plain"
-            },
-            signal
+            }
         };
 
-        return this.instance.request(options_).catch((_error: any) => {
-            if (isAxiosError(_error) && _error.response) {
-                return _error.response;
-            } else {
-                throw _error;
-            }
-        }).then((_response: AxiosResponse) => {
-            return this.processGet4(_response);
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processGet(_response);
         });
     }
 
-    protected processGet4(response: AxiosResponse): Promise<TenantDto> {
+    protected processGet(response: Response): Promise<TenantDto> {
         const status = response.status;
-        let _headers: any = {};
-        if (response.headers && typeof response.headers === "object") {
-            for (const k in response.headers) {
-                if (response.headers.hasOwnProperty(k)) {
-                    _headers[k] = response.headers[k];
-                }
-            }
-        }
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
-            const _responseText = response.data;
+            return response.text().then((_responseText) => {
             let result200: any = null;
-            let resultData200  = _responseText;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
             result200 = TenantDto.fromJS(resultData200);
-            return Promise.resolve<TenantDto>(result200);
-
+            return result200;
+            });
         } else if (status !== 200 && status !== 204) {
-            const _responseText = response.data;
+            return response.text().then((_responseText) => {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
         }
         return Promise.resolve<TenantDto>(null as any);
     }
@@ -1594,7 +1265,7 @@ export class FriendsAndDebt {
      * @param maxResultCount (optional) 
      * @return Success
      */
-    getAll4(keyword: string | undefined, isActive: boolean | undefined, skipCount: number | undefined, maxResultCount: number | undefined, signal?: AbortSignal): Promise<TenantDtoPagedResultDto> {
+    getAll(keyword: string | undefined, isActive: boolean | undefined, skipCount: number | undefined, maxResultCount: number | undefined): Promise<TenantDtoPagedResultDto> {
         let url_ = this.baseUrl + "/api/services/app/Tenant/GetAll?";
         if (keyword === null)
             throw new Error("The parameter 'keyword' cannot be null.");
@@ -1614,46 +1285,32 @@ export class FriendsAndDebt {
             url_ += "MaxResultCount=" + encodeURIComponent("" + maxResultCount) + "&";
         url_ = url_.replace(/[?&]$/, "");
 
-        let options_: AxiosRequestConfig = {
+        let options_: RequestInit = {
             method: "GET",
-            url: url_,
             headers: {
                 "Accept": "text/plain"
-            },
-            signal
+            }
         };
 
-        return this.instance.request(options_).catch((_error: any) => {
-            if (isAxiosError(_error) && _error.response) {
-                return _error.response;
-            } else {
-                throw _error;
-            }
-        }).then((_response: AxiosResponse) => {
-            return this.processGetAll4(_response);
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processGetAll(_response);
         });
     }
 
-    protected processGetAll4(response: AxiosResponse): Promise<TenantDtoPagedResultDto> {
+    protected processGetAll(response: Response): Promise<TenantDtoPagedResultDto> {
         const status = response.status;
-        let _headers: any = {};
-        if (response.headers && typeof response.headers === "object") {
-            for (const k in response.headers) {
-                if (response.headers.hasOwnProperty(k)) {
-                    _headers[k] = response.headers[k];
-                }
-            }
-        }
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
-            const _responseText = response.data;
+            return response.text().then((_responseText) => {
             let result200: any = null;
-            let resultData200  = _responseText;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
             result200 = TenantDtoPagedResultDto.fromJS(resultData200);
-            return Promise.resolve<TenantDtoPagedResultDto>(result200);
-
+            return result200;
+            });
         } else if (status !== 200 && status !== 204) {
-            const _responseText = response.data;
+            return response.text().then((_responseText) => {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
         }
         return Promise.resolve<TenantDtoPagedResultDto>(null as any);
     }
@@ -1662,166 +1319,146 @@ export class FriendsAndDebt {
      * @param body (optional) 
      * @return Success
      */
-    update4(body: TenantDto | undefined, signal?: AbortSignal): Promise<TenantDto> {
+    update(body: TenantDto | undefined): Promise<TenantDto> {
         let url_ = this.baseUrl + "/api/services/app/Tenant/Update";
         url_ = url_.replace(/[?&]$/, "");
 
         const content_ = JSON.stringify(body);
 
-        let options_: AxiosRequestConfig = {
-            data: content_,
+        let options_: RequestInit = {
+            body: content_,
             method: "PUT",
-            url: url_,
             headers: {
                 "Content-Type": "application/json",
                 "Accept": "text/plain"
-            },
-            signal
+            }
         };
 
-        return this.instance.request(options_).catch((_error: any) => {
-            if (isAxiosError(_error) && _error.response) {
-                return _error.response;
-            } else {
-                throw _error;
-            }
-        }).then((_response: AxiosResponse) => {
-            return this.processUpdate4(_response);
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processUpdate(_response);
         });
     }
 
-    protected processUpdate4(response: AxiosResponse): Promise<TenantDto> {
+    protected processUpdate(response: Response): Promise<TenantDto> {
         const status = response.status;
-        let _headers: any = {};
-        if (response.headers && typeof response.headers === "object") {
-            for (const k in response.headers) {
-                if (response.headers.hasOwnProperty(k)) {
-                    _headers[k] = response.headers[k];
-                }
-            }
-        }
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
-            const _responseText = response.data;
+            return response.text().then((_responseText) => {
             let result200: any = null;
-            let resultData200  = _responseText;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
             result200 = TenantDto.fromJS(resultData200);
-            return Promise.resolve<TenantDto>(result200);
-
+            return result200;
+            });
         } else if (status !== 200 && status !== 204) {
-            const _responseText = response.data;
+            return response.text().then((_responseText) => {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
         }
         return Promise.resolve<TenantDto>(null as any);
+    }
+}
+
+export class TokenAuthFriendsAndDebt {
+    private http: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> };
+    private baseUrl: string;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+
+    constructor(baseUrl?: string, http?: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> }) {
+        this.http = http ? http : window as any;
+        this.baseUrl = baseUrl ?? "";
     }
 
     /**
      * @param body (optional) 
      * @return Success
      */
-    authenticate(body: AuthenticateModel | undefined, signal?: AbortSignal): Promise<AuthenticateResultModel> {
+    authenticate(body: AuthenticateModel | undefined): Promise<AuthenticateResultModel> {
         let url_ = this.baseUrl + "/api/TokenAuth/Authenticate";
         url_ = url_.replace(/[?&]$/, "");
-        
+
         const content_ = JSON.stringify(body);
 
-        let options_: AxiosRequestConfig = {
-            data: content_,
+        let options_: RequestInit = {
+            body: content_,
             method: "POST",
-            url: url_,
             headers: {
                 "Content-Type": "application/json",
-                "Accept": "*/*"
-            },
-            signal
-        };
-        return this.instance.request(options_).catch((_error: any) => {
-            if (isAxiosError(_error) && _error.response) {
-                return _error.response;
-            } else {
-               
-                throw _error;
+                "Accept": "text/plain"
             }
-        }).then((_response: AxiosResponse) => {
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
             return this.processAuthenticate(_response);
         });
     }
 
-    protected processAuthenticate(response: AxiosResponse): Promise<AuthenticateResultModel> {
+    protected processAuthenticate(response: Response): Promise<AuthenticateResultModel> {
         const status = response.status;
-        let _headers: any = {};
-        if (response.headers && typeof response.headers === "object") {
-            for (const k in response.headers) {
-                if (response.headers.hasOwnProperty(k)) {
-                    _headers[k] = response.headers[k];
-                }
-            }
-        }
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
-            const _responseText = response.data;
+            return response.text().then((_responseText) => {
             let result200: any = null;
-            let resultData200  = _responseText;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
             result200 = AuthenticateResultModel.fromJS(resultData200);
-            return Promise.resolve<AuthenticateResultModel>(result200);
-
+            return result200;
+            });
         } else if (status !== 200 && status !== 204) {
-            const _responseText = response.data;
+            return response.text().then((_responseText) => {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
         }
         return Promise.resolve<AuthenticateResultModel>(null as any);
+    }
+}
+
+export class UserFriendsAndDebt {
+    private http: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> };
+    private baseUrl: string;
+    protected jsonParseReviver: ((key: string, value: any) => any) | undefined = undefined;
+
+    constructor(baseUrl?: string, http?: { fetch(url: RequestInfo, init?: RequestInit): Promise<Response> }) {
+        this.http = http ? http : window as any;
+        this.baseUrl = baseUrl ?? "";
     }
 
     /**
      * @param body (optional) 
      * @return Success
      */
-    create5(body: CreateUserDto | undefined, signal?: AbortSignal): Promise<UserDto> {
+    create(body: CreateUserDto | undefined): Promise<UserDto> {
         let url_ = this.baseUrl + "/api/services/app/User/Create";
         url_ = url_.replace(/[?&]$/, "");
 
         const content_ = JSON.stringify(body);
 
-        let options_: AxiosRequestConfig = {
-            data: content_,
+        let options_: RequestInit = {
+            body: content_,
             method: "POST",
-            url: url_,
             headers: {
                 "Content-Type": "application/json",
                 "Accept": "text/plain"
-            },
-            signal
+            }
         };
 
-        return this.instance.request(options_).catch((_error: any) => {
-            if (isAxiosError(_error) && _error.response) {
-                return _error.response;
-            } else {
-                throw _error;
-            }
-        }).then((_response: AxiosResponse) => {
-            return this.processCreate5(_response);
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processCreate(_response);
         });
     }
 
-    protected processCreate5(response: AxiosResponse): Promise<UserDto> {
+    protected processCreate(response: Response): Promise<UserDto> {
         const status = response.status;
-        let _headers: any = {};
-        if (response.headers && typeof response.headers === "object") {
-            for (const k in response.headers) {
-                if (response.headers.hasOwnProperty(k)) {
-                    _headers[k] = response.headers[k];
-                }
-            }
-        }
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
-            const _responseText = response.data;
+            return response.text().then((_responseText) => {
             let result200: any = null;
-            let resultData200  = _responseText;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
             result200 = UserDto.fromJS(resultData200);
-            return Promise.resolve<UserDto>(result200);
-
+            return result200;
+            });
         } else if (status !== 200 && status !== 204) {
-            const _responseText = response.data;
+            return response.text().then((_responseText) => {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
         }
         return Promise.resolve<UserDto>(null as any);
     }
@@ -1830,54 +1467,40 @@ export class FriendsAndDebt {
      * @param body (optional) 
      * @return Success
      */
-    update5(body: UserDto | undefined, signal?: AbortSignal): Promise<UserDto> {
+    update(body: UserDto | undefined): Promise<UserDto> {
         let url_ = this.baseUrl + "/api/services/app/User/Update";
         url_ = url_.replace(/[?&]$/, "");
 
         const content_ = JSON.stringify(body);
 
-        let options_: AxiosRequestConfig = {
-            data: content_,
+        let options_: RequestInit = {
+            body: content_,
             method: "PUT",
-            url: url_,
             headers: {
                 "Content-Type": "application/json",
                 "Accept": "text/plain"
-            },
-            signal
+            }
         };
 
-        return this.instance.request(options_).catch((_error: any) => {
-            if (isAxiosError(_error) && _error.response) {
-                return _error.response;
-            } else {
-                throw _error;
-            }
-        }).then((_response: AxiosResponse) => {
-            return this.processUpdate5(_response);
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processUpdate(_response);
         });
     }
 
-    protected processUpdate5(response: AxiosResponse): Promise<UserDto> {
+    protected processUpdate(response: Response): Promise<UserDto> {
         const status = response.status;
-        let _headers: any = {};
-        if (response.headers && typeof response.headers === "object") {
-            for (const k in response.headers) {
-                if (response.headers.hasOwnProperty(k)) {
-                    _headers[k] = response.headers[k];
-                }
-            }
-        }
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
-            const _responseText = response.data;
+            return response.text().then((_responseText) => {
             let result200: any = null;
-            let resultData200  = _responseText;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
             result200 = UserDto.fromJS(resultData200);
-            return Promise.resolve<UserDto>(result200);
-
+            return result200;
+            });
         } else if (status !== 200 && status !== 204) {
-            const _responseText = response.data;
+            return response.text().then((_responseText) => {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
         }
         return Promise.resolve<UserDto>(null as any);
     }
@@ -1886,7 +1509,7 @@ export class FriendsAndDebt {
      * @param id (optional) 
      * @return Success
      */
-    delete5(id: number | undefined, signal?: AbortSignal): Promise<void> {
+    delete(id: number | undefined): Promise<void> {
         let url_ = this.baseUrl + "/api/services/app/User/Delete?";
         if (id === null)
             throw new Error("The parameter 'id' cannot be null.");
@@ -1894,42 +1517,28 @@ export class FriendsAndDebt {
             url_ += "Id=" + encodeURIComponent("" + id) + "&";
         url_ = url_.replace(/[?&]$/, "");
 
-        let options_: AxiosRequestConfig = {
+        let options_: RequestInit = {
             method: "DELETE",
-            url: url_,
             headers: {
-            },
-            signal
+            }
         };
 
-        return this.instance.request(options_).catch((_error: any) => {
-            if (isAxiosError(_error) && _error.response) {
-                return _error.response;
-            } else {
-                throw _error;
-            }
-        }).then((_response: AxiosResponse) => {
-            return this.processDelete5(_response);
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processDelete(_response);
         });
     }
 
-    protected processDelete5(response: AxiosResponse): Promise<void> {
+    protected processDelete(response: Response): Promise<void> {
         const status = response.status;
-        let _headers: any = {};
-        if (response.headers && typeof response.headers === "object") {
-            for (const k in response.headers) {
-                if (response.headers.hasOwnProperty(k)) {
-                    _headers[k] = response.headers[k];
-                }
-            }
-        }
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
-            const _responseText = response.data;
-            return Promise.resolve<void>(null as any);
-
+            return response.text().then((_responseText) => {
+            return;
+            });
         } else if (status !== 200 && status !== 204) {
-            const _responseText = response.data;
+            return response.text().then((_responseText) => {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
         }
         return Promise.resolve<void>(null as any);
     }
@@ -1938,50 +1547,36 @@ export class FriendsAndDebt {
      * @param body (optional) 
      * @return Success
      */
-    activate(body: Int64EntityDto | undefined, signal?: AbortSignal): Promise<void> {
+    activate(body: Int64EntityDto | undefined): Promise<void> {
         let url_ = this.baseUrl + "/api/services/app/User/Activate";
         url_ = url_.replace(/[?&]$/, "");
 
         const content_ = JSON.stringify(body);
 
-        let options_: AxiosRequestConfig = {
-            data: content_,
+        let options_: RequestInit = {
+            body: content_,
             method: "POST",
-            url: url_,
             headers: {
                 "Content-Type": "application/json",
-            },
-            signal
+            }
         };
 
-        return this.instance.request(options_).catch((_error: any) => {
-            if (isAxiosError(_error) && _error.response) {
-                return _error.response;
-            } else {
-                throw _error;
-            }
-        }).then((_response: AxiosResponse) => {
+        return this.http.fetch(url_, options_).then((_response: Response) => {
             return this.processActivate(_response);
         });
     }
 
-    protected processActivate(response: AxiosResponse): Promise<void> {
+    protected processActivate(response: Response): Promise<void> {
         const status = response.status;
-        let _headers: any = {};
-        if (response.headers && typeof response.headers === "object") {
-            for (const k in response.headers) {
-                if (response.headers.hasOwnProperty(k)) {
-                    _headers[k] = response.headers[k];
-                }
-            }
-        }
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
-            const _responseText = response.data;
-            return Promise.resolve<void>(null as any);
-
+            return response.text().then((_responseText) => {
+            return;
+            });
         } else if (status !== 200 && status !== 204) {
-            const _responseText = response.data;
+            return response.text().then((_responseText) => {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
         }
         return Promise.resolve<void>(null as any);
     }
@@ -1990,50 +1585,36 @@ export class FriendsAndDebt {
      * @param body (optional) 
      * @return Success
      */
-    deActivate(body: Int64EntityDto | undefined, signal?: AbortSignal): Promise<void> {
+    deActivate(body: Int64EntityDto | undefined): Promise<void> {
         let url_ = this.baseUrl + "/api/services/app/User/DeActivate";
         url_ = url_.replace(/[?&]$/, "");
 
         const content_ = JSON.stringify(body);
 
-        let options_: AxiosRequestConfig = {
-            data: content_,
+        let options_: RequestInit = {
+            body: content_,
             method: "POST",
-            url: url_,
             headers: {
                 "Content-Type": "application/json",
-            },
-            signal
+            }
         };
 
-        return this.instance.request(options_).catch((_error: any) => {
-            if (isAxiosError(_error) && _error.response) {
-                return _error.response;
-            } else {
-                throw _error;
-            }
-        }).then((_response: AxiosResponse) => {
+        return this.http.fetch(url_, options_).then((_response: Response) => {
             return this.processDeActivate(_response);
         });
     }
 
-    protected processDeActivate(response: AxiosResponse): Promise<void> {
+    protected processDeActivate(response: Response): Promise<void> {
         const status = response.status;
-        let _headers: any = {};
-        if (response.headers && typeof response.headers === "object") {
-            for (const k in response.headers) {
-                if (response.headers.hasOwnProperty(k)) {
-                    _headers[k] = response.headers[k];
-                }
-            }
-        }
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
-            const _responseText = response.data;
-            return Promise.resolve<void>(null as any);
-
+            return response.text().then((_responseText) => {
+            return;
+            });
         } else if (status !== 200 && status !== 204) {
-            const _responseText = response.data;
+            return response.text().then((_responseText) => {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
         }
         return Promise.resolve<void>(null as any);
     }
@@ -2041,50 +1622,36 @@ export class FriendsAndDebt {
     /**
      * @return Success
      */
-    getRoles2(signal?: AbortSignal): Promise<RoleDtoListResultDto> {
+    getRoles(): Promise<RoleDtoListResultDto> {
         let url_ = this.baseUrl + "/api/services/app/User/GetRoles";
         url_ = url_.replace(/[?&]$/, "");
 
-        let options_: AxiosRequestConfig = {
+        let options_: RequestInit = {
             method: "GET",
-            url: url_,
             headers: {
                 "Accept": "text/plain"
-            },
-            signal
+            }
         };
 
-        return this.instance.request(options_).catch((_error: any) => {
-            if (isAxiosError(_error) && _error.response) {
-                return _error.response;
-            } else {
-                throw _error;
-            }
-        }).then((_response: AxiosResponse) => {
-            return this.processGetRoles2(_response);
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processGetRoles(_response);
         });
     }
 
-    protected processGetRoles2(response: AxiosResponse): Promise<RoleDtoListResultDto> {
+    protected processGetRoles(response: Response): Promise<RoleDtoListResultDto> {
         const status = response.status;
-        let _headers: any = {};
-        if (response.headers && typeof response.headers === "object") {
-            for (const k in response.headers) {
-                if (response.headers.hasOwnProperty(k)) {
-                    _headers[k] = response.headers[k];
-                }
-            }
-        }
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
-            const _responseText = response.data;
+            return response.text().then((_responseText) => {
             let result200: any = null;
-            let resultData200  = _responseText;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
             result200 = RoleDtoListResultDto.fromJS(resultData200);
-            return Promise.resolve<RoleDtoListResultDto>(result200);
-
+            return result200;
+            });
         } else if (status !== 200 && status !== 204) {
-            const _responseText = response.data;
+            return response.text().then((_responseText) => {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
         }
         return Promise.resolve<RoleDtoListResultDto>(null as any);
     }
@@ -2093,50 +1660,36 @@ export class FriendsAndDebt {
      * @param body (optional) 
      * @return Success
      */
-    changeLanguage(body: ChangeUserLanguageDto | undefined, signal?: AbortSignal): Promise<void> {
+    changeLanguage(body: ChangeUserLanguageDto | undefined): Promise<void> {
         let url_ = this.baseUrl + "/api/services/app/User/ChangeLanguage";
         url_ = url_.replace(/[?&]$/, "");
 
         const content_ = JSON.stringify(body);
 
-        let options_: AxiosRequestConfig = {
-            data: content_,
+        let options_: RequestInit = {
+            body: content_,
             method: "POST",
-            url: url_,
             headers: {
                 "Content-Type": "application/json",
-            },
-            signal
+            }
         };
 
-        return this.instance.request(options_).catch((_error: any) => {
-            if (isAxiosError(_error) && _error.response) {
-                return _error.response;
-            } else {
-                throw _error;
-            }
-        }).then((_response: AxiosResponse) => {
+        return this.http.fetch(url_, options_).then((_response: Response) => {
             return this.processChangeLanguage(_response);
         });
     }
 
-    protected processChangeLanguage(response: AxiosResponse): Promise<void> {
+    protected processChangeLanguage(response: Response): Promise<void> {
         const status = response.status;
-        let _headers: any = {};
-        if (response.headers && typeof response.headers === "object") {
-            for (const k in response.headers) {
-                if (response.headers.hasOwnProperty(k)) {
-                    _headers[k] = response.headers[k];
-                }
-            }
-        }
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
-            const _responseText = response.data;
-            return Promise.resolve<void>(null as any);
-
+            return response.text().then((_responseText) => {
+            return;
+            });
         } else if (status !== 200 && status !== 204) {
-            const _responseText = response.data;
+            return response.text().then((_responseText) => {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
         }
         return Promise.resolve<void>(null as any);
     }
@@ -2145,55 +1698,41 @@ export class FriendsAndDebt {
      * @param body (optional) 
      * @return Success
      */
-    changePassword(body: ChangePasswordDto | undefined, signal?: AbortSignal): Promise<boolean> {
+    changePassword(body: ChangePasswordDto | undefined): Promise<boolean> {
         let url_ = this.baseUrl + "/api/services/app/User/ChangePassword";
         url_ = url_.replace(/[?&]$/, "");
 
         const content_ = JSON.stringify(body);
 
-        let options_: AxiosRequestConfig = {
-            data: content_,
+        let options_: RequestInit = {
+            body: content_,
             method: "POST",
-            url: url_,
             headers: {
                 "Content-Type": "application/json",
                 "Accept": "text/plain"
-            },
-            signal
+            }
         };
 
-        return this.instance.request(options_).catch((_error: any) => {
-            if (isAxiosError(_error) && _error.response) {
-                return _error.response;
-            } else {
-                throw _error;
-            }
-        }).then((_response: AxiosResponse) => {
+        return this.http.fetch(url_, options_).then((_response: Response) => {
             return this.processChangePassword(_response);
         });
     }
 
-    protected processChangePassword(response: AxiosResponse): Promise<boolean> {
+    protected processChangePassword(response: Response): Promise<boolean> {
         const status = response.status;
-        let _headers: any = {};
-        if (response.headers && typeof response.headers === "object") {
-            for (const k in response.headers) {
-                if (response.headers.hasOwnProperty(k)) {
-                    _headers[k] = response.headers[k];
-                }
-            }
-        }
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
-            const _responseText = response.data;
+            return response.text().then((_responseText) => {
             let result200: any = null;
-            let resultData200  = _responseText;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
                 result200 = resultData200 !== undefined ? resultData200 : <any>null;
     
-            return Promise.resolve<boolean>(result200);
-
+            return result200;
+            });
         } else if (status !== 200 && status !== 204) {
-            const _responseText = response.data;
+            return response.text().then((_responseText) => {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
         }
         return Promise.resolve<boolean>(null as any);
     }
@@ -2202,55 +1741,41 @@ export class FriendsAndDebt {
      * @param body (optional) 
      * @return Success
      */
-    resetPassword(body: ResetPasswordDto | undefined, signal?: AbortSignal): Promise<boolean> {
+    resetPassword(body: ResetPasswordDto | undefined): Promise<boolean> {
         let url_ = this.baseUrl + "/api/services/app/User/ResetPassword";
         url_ = url_.replace(/[?&]$/, "");
 
         const content_ = JSON.stringify(body);
 
-        let options_: AxiosRequestConfig = {
-            data: content_,
+        let options_: RequestInit = {
+            body: content_,
             method: "POST",
-            url: url_,
             headers: {
                 "Content-Type": "application/json",
                 "Accept": "text/plain"
-            },
-            signal
+            }
         };
 
-        return this.instance.request(options_).catch((_error: any) => {
-            if (isAxiosError(_error) && _error.response) {
-                return _error.response;
-            } else {
-                throw _error;
-            }
-        }).then((_response: AxiosResponse) => {
+        return this.http.fetch(url_, options_).then((_response: Response) => {
             return this.processResetPassword(_response);
         });
     }
 
-    protected processResetPassword(response: AxiosResponse): Promise<boolean> {
+    protected processResetPassword(response: Response): Promise<boolean> {
         const status = response.status;
-        let _headers: any = {};
-        if (response.headers && typeof response.headers === "object") {
-            for (const k in response.headers) {
-                if (response.headers.hasOwnProperty(k)) {
-                    _headers[k] = response.headers[k];
-                }
-            }
-        }
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
-            const _responseText = response.data;
+            return response.text().then((_responseText) => {
             let result200: any = null;
-            let resultData200  = _responseText;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
                 result200 = resultData200 !== undefined ? resultData200 : <any>null;
     
-            return Promise.resolve<boolean>(result200);
-
+            return result200;
+            });
         } else if (status !== 200 && status !== 204) {
-            const _responseText = response.data;
+            return response.text().then((_responseText) => {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
         }
         return Promise.resolve<boolean>(null as any);
     }
@@ -2259,7 +1784,7 @@ export class FriendsAndDebt {
      * @param id (optional) 
      * @return Success
      */
-    get5(id: number | undefined, signal?: AbortSignal): Promise<UserDto> {
+    get(id: number | undefined): Promise<UserDto> {
         let url_ = this.baseUrl + "/api/services/app/User/Get?";
         if (id === null)
             throw new Error("The parameter 'id' cannot be null.");
@@ -2267,46 +1792,32 @@ export class FriendsAndDebt {
             url_ += "Id=" + encodeURIComponent("" + id) + "&";
         url_ = url_.replace(/[?&]$/, "");
 
-        let options_: AxiosRequestConfig = {
+        let options_: RequestInit = {
             method: "GET",
-            url: url_,
             headers: {
                 "Accept": "text/plain"
-            },
-            signal
+            }
         };
 
-        return this.instance.request(options_).catch((_error: any) => {
-            if (isAxiosError(_error) && _error.response) {
-                return _error.response;
-            } else {
-                throw _error;
-            }
-        }).then((_response: AxiosResponse) => {
-            return this.processGet5(_response);
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processGet(_response);
         });
     }
 
-    protected processGet5(response: AxiosResponse): Promise<UserDto> {
+    protected processGet(response: Response): Promise<UserDto> {
         const status = response.status;
-        let _headers: any = {};
-        if (response.headers && typeof response.headers === "object") {
-            for (const k in response.headers) {
-                if (response.headers.hasOwnProperty(k)) {
-                    _headers[k] = response.headers[k];
-                }
-            }
-        }
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
-            const _responseText = response.data;
+            return response.text().then((_responseText) => {
             let result200: any = null;
-            let resultData200  = _responseText;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
             result200 = UserDto.fromJS(resultData200);
-            return Promise.resolve<UserDto>(result200);
-
+            return result200;
+            });
         } else if (status !== 200 && status !== 204) {
-            const _responseText = response.data;
+            return response.text().then((_responseText) => {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
         }
         return Promise.resolve<UserDto>(null as any);
     }
@@ -2318,7 +1829,7 @@ export class FriendsAndDebt {
      * @param maxResultCount (optional) 
      * @return Success
      */
-    getAll5(keyword: string | undefined, isActive: boolean | undefined, skipCount: number | undefined, maxResultCount: number | undefined, signal?: AbortSignal): Promise<UserDtoPagedResultDto> {
+    getAll(keyword: string | undefined, isActive: boolean | undefined, skipCount: number | undefined, maxResultCount: number | undefined): Promise<UserDtoPagedResultDto> {
         let url_ = this.baseUrl + "/api/services/app/User/GetAll?";
         if (keyword === null)
             throw new Error("The parameter 'keyword' cannot be null.");
@@ -2338,55 +1849,41 @@ export class FriendsAndDebt {
             url_ += "MaxResultCount=" + encodeURIComponent("" + maxResultCount) + "&";
         url_ = url_.replace(/[?&]$/, "");
 
-        let options_: AxiosRequestConfig = {
+        let options_: RequestInit = {
             method: "GET",
-            url: url_,
             headers: {
                 "Accept": "text/plain"
-            },
-            signal
+            }
         };
 
-        return this.instance.request(options_).catch((_error: any) => {
-            if (isAxiosError(_error) && _error.response) {
-                return _error.response;
-            } else {
-                throw _error;
-            }
-        }).then((_response: AxiosResponse) => {
-            return this.processGetAll5(_response);
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processGetAll(_response);
         });
     }
 
-    protected processGetAll5(response: AxiosResponse): Promise<UserDtoPagedResultDto> {
+    protected processGetAll(response: Response): Promise<UserDtoPagedResultDto> {
         const status = response.status;
-        let _headers: any = {};
-        if (response.headers && typeof response.headers === "object") {
-            for (const k in response.headers) {
-                if (response.headers.hasOwnProperty(k)) {
-                    _headers[k] = response.headers[k];
-                }
-            }
-        }
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
-            const _responseText = response.data;
+            return response.text().then((_responseText) => {
             let result200: any = null;
-            let resultData200  = _responseText;
+            let resultData200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver);
             result200 = UserDtoPagedResultDto.fromJS(resultData200);
-            return Promise.resolve<UserDtoPagedResultDto>(result200);
-
+            return result200;
+            });
         } else if (status !== 200 && status !== 204) {
-            const _responseText = response.data;
+            return response.text().then((_responseText) => {
             return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
         }
         return Promise.resolve<UserDtoPagedResultDto>(null as any);
     }
 }
 
 export class ApplicationInfoDto implements IApplicationInfoDto {
-    version?: string | undefined;
-    releaseDate?: Date;
-    features?: { [key: string]: boolean; } | undefined;
+    version!: string | undefined;
+    releaseDate!: moment.Moment;
+    features!: { [key: string]: boolean; } | undefined;
 
     constructor(data?: IApplicationInfoDto) {
         if (data) {
@@ -2400,7 +1897,7 @@ export class ApplicationInfoDto implements IApplicationInfoDto {
     init(_data?: any) {
         if (_data) {
             this.version = _data["version"];
-            this.releaseDate = _data["releaseDate"] ? new Date(_data["releaseDate"].toString()) : <any>undefined;
+            this.releaseDate = _data["releaseDate"] ? moment(_data["releaseDate"].toString()) : <any>undefined;
             if (_data["features"]) {
                 this.features = {} as any;
                 for (let key in _data["features"]) {
@@ -2431,18 +1928,25 @@ export class ApplicationInfoDto implements IApplicationInfoDto {
         }
         return data;
     }
+
+    clone(): ApplicationInfoDto {
+        const json = this.toJSON();
+        let result = new ApplicationInfoDto();
+        result.init(json);
+        return result;
+    }
 }
 
 export interface IApplicationInfoDto {
-    version?: string | undefined;
-    releaseDate?: Date;
-    features?: { [key: string]: boolean; } | undefined;
+    version: string | undefined;
+    releaseDate: moment.Moment;
+    features: { [key: string]: boolean; } | undefined;
 }
 
 export class AuthenticateModel implements IAuthenticateModel {
     userNameOrEmailAddress!: string;
     password!: string;
-    rememberClient?: boolean;
+    rememberClient!: boolean;
 
     constructor(data?: IAuthenticateModel) {
         if (data) {
@@ -2475,19 +1979,26 @@ export class AuthenticateModel implements IAuthenticateModel {
         data["rememberClient"] = this.rememberClient;
         return data;
     }
+
+    clone(): AuthenticateModel {
+        const json = this.toJSON();
+        let result = new AuthenticateModel();
+        result.init(json);
+        return result;
+    }
 }
 
 export interface IAuthenticateModel {
     userNameOrEmailAddress: string;
     password: string;
-    rememberClient?: boolean;
+    rememberClient: boolean;
 }
 
 export class AuthenticateResultModel implements IAuthenticateResultModel {
-    accessToken?: string | undefined;
-    encryptedAccessToken?: string | undefined;
-    expireInSeconds?: number;
-    userId?: number;
+    accessToken!: string | undefined;
+    encryptedAccessToken!: string | undefined;
+    expireInSeconds!: number;
+    userId!: number;
 
     constructor(data?: IAuthenticateResultModel) {
         if (data) {
@@ -2522,21 +2033,28 @@ export class AuthenticateResultModel implements IAuthenticateResultModel {
         data["userId"] = this.userId;
         return data;
     }
+
+    clone(): AuthenticateResultModel {
+        const json = this.toJSON();
+        let result = new AuthenticateResultModel();
+        result.init(json);
+        return result;
+    }
 }
 
 export interface IAuthenticateResultModel {
-    accessToken?: string | undefined;
-    encryptedAccessToken?: string | undefined;
-    expireInSeconds?: number;
-    userId?: number;
+    accessToken: string | undefined;
+    encryptedAccessToken: string | undefined;
+    expireInSeconds: number;
+    userId: number;
 }
 
 export class BoardAddCardModel implements IBoardAddCardModel {
-    boardId?: number;
-    title?: string | undefined;
-    description?: string | undefined;
-    ownerId?: number;
-    amount?: number;
+    boardId!: number;
+    title!: string | undefined;
+    description!: string | undefined;
+    ownerId!: number;
+    amount!: number;
 
     constructor(data?: IBoardAddCardModel) {
         if (data) {
@@ -2573,19 +2091,26 @@ export class BoardAddCardModel implements IBoardAddCardModel {
         data["amount"] = this.amount;
         return data;
     }
+
+    clone(): BoardAddCardModel {
+        const json = this.toJSON();
+        let result = new BoardAddCardModel();
+        result.init(json);
+        return result;
+    }
 }
 
 export interface IBoardAddCardModel {
-    boardId?: number;
-    title?: string | undefined;
-    description?: string | undefined;
-    ownerId?: number;
-    amount?: number;
+    boardId: number;
+    title: string | undefined;
+    description: string | undefined;
+    ownerId: number;
+    amount: number;
 }
 
 export class BoardAddMemberModel implements IBoardAddMemberModel {
-    id?: number;
-    userNames?: string[] | undefined;
+    id!: number;
+    userNames!: string[] | undefined;
 
     constructor(data?: IBoardAddMemberModel) {
         if (data) {
@@ -2624,20 +2149,27 @@ export class BoardAddMemberModel implements IBoardAddMemberModel {
         }
         return data;
     }
+
+    clone(): BoardAddMemberModel {
+        const json = this.toJSON();
+        let result = new BoardAddMemberModel();
+        result.init(json);
+        return result;
+    }
 }
 
 export interface IBoardAddMemberModel {
-    id?: number;
-    userNames?: string[] | undefined;
+    id: number;
+    userNames: string[] | undefined;
 }
 
 export class BoardModel implements IBoardModel {
-    id?: number;
-    color?: string | undefined;
-    name?: string | undefined;
-    owner?: UserDto;
-    members?: UserDto[] | undefined;
-    cards?: CardDto[] | undefined;
+    id!: number;
+    color!: string | undefined;
+    name!: string | undefined;
+    owner!: UserDto;
+    members!: UserDto[] | undefined;
+    cards!: CardDto[] | undefined;
 
     constructor(data?: IBoardModel) {
         if (data) {
@@ -2692,20 +2224,27 @@ export class BoardModel implements IBoardModel {
         }
         return data;
     }
+
+    clone(): BoardModel {
+        const json = this.toJSON();
+        let result = new BoardModel();
+        result.init(json);
+        return result;
+    }
 }
 
 export interface IBoardModel {
-    id?: number;
-    color?: string | undefined;
-    name?: string | undefined;
-    owner?: UserDto;
-    members?: UserDto[] | undefined;
-    cards?: CardDto[] | undefined;
+    id: number;
+    color: string | undefined;
+    name: string | undefined;
+    owner: UserDto;
+    members: UserDto[] | undefined;
+    cards: CardDto[] | undefined;
 }
 
 export class BoardModelPagedResultDto implements IBoardModelPagedResultDto {
-    items?: BoardModel[] | undefined;
-    totalCount?: number;
+    items!: BoardModel[] | undefined;
+    totalCount!: number;
 
     constructor(data?: IBoardModelPagedResultDto) {
         if (data) {
@@ -2744,19 +2283,26 @@ export class BoardModelPagedResultDto implements IBoardModelPagedResultDto {
         data["totalCount"] = this.totalCount;
         return data;
     }
+
+    clone(): BoardModelPagedResultDto {
+        const json = this.toJSON();
+        let result = new BoardModelPagedResultDto();
+        result.init(json);
+        return result;
+    }
 }
 
 export interface IBoardModelPagedResultDto {
-    items?: BoardModel[] | undefined;
-    totalCount?: number;
+    items: BoardModel[] | undefined;
+    totalCount: number;
 }
 
 export class CardDto implements ICardDto {
-    id?: number;
-    title?: string | undefined;
-    description?: string | undefined;
-    amount?: number;
-    owner?: UserDto;
+    id!: number;
+    title!: string | undefined;
+    description!: string | undefined;
+    amount!: number;
+    owner!: UserDto;
 
     constructor(data?: ICardDto) {
         if (data) {
@@ -2793,14 +2339,21 @@ export class CardDto implements ICardDto {
         data["owner"] = this.owner ? this.owner.toJSON() : <any>undefined;
         return data;
     }
+
+    clone(): CardDto {
+        const json = this.toJSON();
+        let result = new CardDto();
+        result.init(json);
+        return result;
+    }
 }
 
 export interface ICardDto {
-    id?: number;
-    title?: string | undefined;
-    description?: string | undefined;
-    amount?: number;
-    owner?: UserDto;
+    id: number;
+    title: string | undefined;
+    description: string | undefined;
+    amount: number;
+    owner: UserDto;
 }
 
 export class ChangePasswordDto implements IChangePasswordDto {
@@ -2835,6 +2388,13 @@ export class ChangePasswordDto implements IChangePasswordDto {
         data["currentPassword"] = this.currentPassword;
         data["newPassword"] = this.newPassword;
         return data;
+    }
+
+    clone(): ChangePasswordDto {
+        const json = this.toJSON();
+        let result = new ChangePasswordDto();
+        result.init(json);
+        return result;
     }
 }
 
@@ -2873,6 +2433,13 @@ export class ChangeUiThemeInput implements IChangeUiThemeInput {
         data["theme"] = this.theme;
         return data;
     }
+
+    clone(): ChangeUiThemeInput {
+        const json = this.toJSON();
+        let result = new ChangeUiThemeInput();
+        result.init(json);
+        return result;
+    }
 }
 
 export interface IChangeUiThemeInput {
@@ -2909,6 +2476,13 @@ export class ChangeUserLanguageDto implements IChangeUserLanguageDto {
         data["languageName"] = this.languageName;
         return data;
     }
+
+    clone(): ChangeUserLanguageDto {
+        const json = this.toJSON();
+        let result = new ChangeUserLanguageDto();
+        result.init(json);
+        return result;
+    }
 }
 
 export interface IChangeUserLanguageDto {
@@ -2916,9 +2490,8 @@ export interface IChangeUserLanguageDto {
 }
 
 export class CreateBoardModel implements ICreateBoardModel {
-    color?: string | undefined;
-    name?: string | undefined;
-    owner?: string | undefined;
+    color!: string | undefined;
+    name!: string | undefined;
 
     constructor(data?: ICreateBoardModel) {
         if (data) {
@@ -2933,7 +2506,6 @@ export class CreateBoardModel implements ICreateBoardModel {
         if (_data) {
             this.color = _data["color"];
             this.name = _data["name"];
-            this.owner = _data["owner"];
         }
     }
 
@@ -2948,21 +2520,26 @@ export class CreateBoardModel implements ICreateBoardModel {
         data = typeof data === 'object' ? data : {};
         data["color"] = this.color;
         data["name"] = this.name;
-        data["owner"] = this.owner;
         return data;
+    }
+
+    clone(): CreateBoardModel {
+        const json = this.toJSON();
+        let result = new CreateBoardModel();
+        result.init(json);
+        return result;
     }
 }
 
 export interface ICreateBoardModel {
-    color?: string | undefined;
-    name?: string | undefined;
-    owner?: string | undefined;
+    color: string | undefined;
+    name: string | undefined;
 }
 
 export class CreateFriendModel implements ICreateFriendModel {
-    introduce?: string | undefined;
-    owner?: string | undefined;
-    user?: string | undefined;
+    introduce!: string | undefined;
+    owner!: string | undefined;
+    user!: string | undefined;
 
     constructor(data?: ICreateFriendModel) {
         if (data) {
@@ -2995,20 +2572,27 @@ export class CreateFriendModel implements ICreateFriendModel {
         data["user"] = this.user;
         return data;
     }
+
+    clone(): CreateFriendModel {
+        const json = this.toJSON();
+        let result = new CreateFriendModel();
+        result.init(json);
+        return result;
+    }
 }
 
 export interface ICreateFriendModel {
-    introduce?: string | undefined;
-    owner?: string | undefined;
-    user?: string | undefined;
+    introduce: string | undefined;
+    owner: string | undefined;
+    user: string | undefined;
 }
 
 export class CreateRoleDto implements ICreateRoleDto {
     name!: string;
     displayName!: string;
-    normalizedName?: string | undefined;
-    description?: string | undefined;
-    grantedPermissions?: string[] | undefined;
+    normalizedName!: string | undefined;
+    description!: string | undefined;
+    grantedPermissions!: string[] | undefined;
 
     constructor(data?: ICreateRoleDto) {
         if (data) {
@@ -3053,22 +2637,29 @@ export class CreateRoleDto implements ICreateRoleDto {
         }
         return data;
     }
+
+    clone(): CreateRoleDto {
+        const json = this.toJSON();
+        let result = new CreateRoleDto();
+        result.init(json);
+        return result;
+    }
 }
 
 export interface ICreateRoleDto {
     name: string;
     displayName: string;
-    normalizedName?: string | undefined;
-    description?: string | undefined;
-    grantedPermissions?: string[] | undefined;
+    normalizedName: string | undefined;
+    description: string | undefined;
+    grantedPermissions: string[] | undefined;
 }
 
 export class CreateTenantDto implements ICreateTenantDto {
     tenancyName!: string;
     name!: string;
     adminEmailAddress!: string;
-    connectionString?: string | undefined;
-    isActive?: boolean;
+    connectionString!: string | undefined;
+    isActive!: boolean;
 
     constructor(data?: ICreateTenantDto) {
         if (data) {
@@ -3105,14 +2696,21 @@ export class CreateTenantDto implements ICreateTenantDto {
         data["isActive"] = this.isActive;
         return data;
     }
+
+    clone(): CreateTenantDto {
+        const json = this.toJSON();
+        let result = new CreateTenantDto();
+        result.init(json);
+        return result;
+    }
 }
 
 export interface ICreateTenantDto {
     tenancyName: string;
     name: string;
     adminEmailAddress: string;
-    connectionString?: string | undefined;
-    isActive?: boolean;
+    connectionString: string | undefined;
+    isActive: boolean;
 }
 
 export class CreateUserDto implements ICreateUserDto {
@@ -3120,8 +2718,8 @@ export class CreateUserDto implements ICreateUserDto {
     name!: string;
     surname!: string;
     emailAddress!: string;
-    isActive?: boolean;
-    roleNames?: string[] | undefined;
+    isActive!: boolean;
+    roleNames!: string[] | undefined;
     password!: string;
 
     constructor(data?: ICreateUserDto) {
@@ -3171,6 +2769,13 @@ export class CreateUserDto implements ICreateUserDto {
         data["password"] = this.password;
         return data;
     }
+
+    clone(): CreateUserDto {
+        const json = this.toJSON();
+        let result = new CreateUserDto();
+        result.init(json);
+        return result;
+    }
 }
 
 export interface ICreateUserDto {
@@ -3178,15 +2783,15 @@ export interface ICreateUserDto {
     name: string;
     surname: string;
     emailAddress: string;
-    isActive?: boolean;
-    roleNames?: string[] | undefined;
+    isActive: boolean;
+    roleNames: string[] | undefined;
     password: string;
 }
 
 export class FlatPermissionDto implements IFlatPermissionDto {
-    name?: string | undefined;
-    displayName?: string | undefined;
-    description?: string | undefined;
+    name!: string | undefined;
+    displayName!: string | undefined;
+    description!: string | undefined;
 
     constructor(data?: IFlatPermissionDto) {
         if (data) {
@@ -3219,17 +2824,24 @@ export class FlatPermissionDto implements IFlatPermissionDto {
         data["description"] = this.description;
         return data;
     }
+
+    clone(): FlatPermissionDto {
+        const json = this.toJSON();
+        let result = new FlatPermissionDto();
+        result.init(json);
+        return result;
+    }
 }
 
 export interface IFlatPermissionDto {
-    name?: string | undefined;
-    displayName?: string | undefined;
-    description?: string | undefined;
+    name: string | undefined;
+    displayName: string | undefined;
+    description: string | undefined;
 }
 
 export class FriendModel implements IFriendModel {
-    id?: number;
-    introduce?: string | undefined;
+    id!: number;
+    introduce!: string | undefined;
 
     constructor(data?: IFriendModel) {
         if (data) {
@@ -3260,16 +2872,23 @@ export class FriendModel implements IFriendModel {
         data["introduce"] = this.introduce;
         return data;
     }
+
+    clone(): FriendModel {
+        const json = this.toJSON();
+        let result = new FriendModel();
+        result.init(json);
+        return result;
+    }
 }
 
 export interface IFriendModel {
-    id?: number;
-    introduce?: string | undefined;
+    id: number;
+    introduce: string | undefined;
 }
 
 export class FriendModelPagedResultDto implements IFriendModelPagedResultDto {
-    items?: FriendModel[] | undefined;
-    totalCount?: number;
+    items!: FriendModel[] | undefined;
+    totalCount!: number;
 
     constructor(data?: IFriendModelPagedResultDto) {
         if (data) {
@@ -3308,17 +2927,24 @@ export class FriendModelPagedResultDto implements IFriendModelPagedResultDto {
         data["totalCount"] = this.totalCount;
         return data;
     }
+
+    clone(): FriendModelPagedResultDto {
+        const json = this.toJSON();
+        let result = new FriendModelPagedResultDto();
+        result.init(json);
+        return result;
+    }
 }
 
 export interface IFriendModelPagedResultDto {
-    items?: FriendModel[] | undefined;
-    totalCount?: number;
+    items: FriendModel[] | undefined;
+    totalCount: number;
 }
 
 export class GetCurrentLoginInformationsOutput implements IGetCurrentLoginInformationsOutput {
-    application?: ApplicationInfoDto;
-    user?: UserLoginInfoDto;
-    tenant?: TenantLoginInfoDto;
+    application!: ApplicationInfoDto;
+    user!: UserLoginInfoDto;
+    tenant!: TenantLoginInfoDto;
 
     constructor(data?: IGetCurrentLoginInformationsOutput) {
         if (data) {
@@ -3351,18 +2977,25 @@ export class GetCurrentLoginInformationsOutput implements IGetCurrentLoginInform
         data["tenant"] = this.tenant ? this.tenant.toJSON() : <any>undefined;
         return data;
     }
+
+    clone(): GetCurrentLoginInformationsOutput {
+        const json = this.toJSON();
+        let result = new GetCurrentLoginInformationsOutput();
+        result.init(json);
+        return result;
+    }
 }
 
 export interface IGetCurrentLoginInformationsOutput {
-    application?: ApplicationInfoDto;
-    user?: UserLoginInfoDto;
-    tenant?: TenantLoginInfoDto;
+    application: ApplicationInfoDto;
+    user: UserLoginInfoDto;
+    tenant: TenantLoginInfoDto;
 }
 
 export class GetRoleForEditOutput implements IGetRoleForEditOutput {
-    role?: RoleEditDto;
-    permissions?: FlatPermissionDto[] | undefined;
-    grantedPermissionNames?: string[] | undefined;
+    role!: RoleEditDto;
+    permissions!: FlatPermissionDto[] | undefined;
+    grantedPermissionNames!: string[] | undefined;
 
     constructor(data?: IGetRoleForEditOutput) {
         if (data) {
@@ -3411,16 +3044,23 @@ export class GetRoleForEditOutput implements IGetRoleForEditOutput {
         }
         return data;
     }
+
+    clone(): GetRoleForEditOutput {
+        const json = this.toJSON();
+        let result = new GetRoleForEditOutput();
+        result.init(json);
+        return result;
+    }
 }
 
 export interface IGetRoleForEditOutput {
-    role?: RoleEditDto;
-    permissions?: FlatPermissionDto[] | undefined;
-    grantedPermissionNames?: string[] | undefined;
+    role: RoleEditDto;
+    permissions: FlatPermissionDto[] | undefined;
+    grantedPermissionNames: string[] | undefined;
 }
 
 export class Int64EntityDto implements IInt64EntityDto {
-    id?: number;
+    id!: number;
 
     constructor(data?: IInt64EntityDto) {
         if (data) {
@@ -3449,10 +3089,17 @@ export class Int64EntityDto implements IInt64EntityDto {
         data["id"] = this.id;
         return data;
     }
+
+    clone(): Int64EntityDto {
+        const json = this.toJSON();
+        let result = new Int64EntityDto();
+        result.init(json);
+        return result;
+    }
 }
 
 export interface IInt64EntityDto {
-    id?: number;
+    id: number;
 }
 
 export class IsTenantAvailableInput implements IIsTenantAvailableInput {
@@ -3485,6 +3132,13 @@ export class IsTenantAvailableInput implements IIsTenantAvailableInput {
         data["tenancyName"] = this.tenancyName;
         return data;
     }
+
+    clone(): IsTenantAvailableInput {
+        const json = this.toJSON();
+        let result = new IsTenantAvailableInput();
+        result.init(json);
+        return result;
+    }
 }
 
 export interface IIsTenantAvailableInput {
@@ -3492,8 +3146,8 @@ export interface IIsTenantAvailableInput {
 }
 
 export class IsTenantAvailableOutput implements IIsTenantAvailableOutput {
-    state?: TenantAvailabilityState;
-    tenantId?: number | undefined;
+    state!: TenantAvailabilityState;
+    tenantId!: number | undefined;
 
     constructor(data?: IIsTenantAvailableOutput) {
         if (data) {
@@ -3524,18 +3178,25 @@ export class IsTenantAvailableOutput implements IIsTenantAvailableOutput {
         data["tenantId"] = this.tenantId;
         return data;
     }
+
+    clone(): IsTenantAvailableOutput {
+        const json = this.toJSON();
+        let result = new IsTenantAvailableOutput();
+        result.init(json);
+        return result;
+    }
 }
 
 export interface IIsTenantAvailableOutput {
-    state?: TenantAvailabilityState;
-    tenantId?: number | undefined;
+    state: TenantAvailabilityState;
+    tenantId: number | undefined;
 }
 
 export class PermissionDto implements IPermissionDto {
-    id?: number;
-    name?: string | undefined;
-    displayName?: string | undefined;
-    description?: string | undefined;
+    id!: number;
+    name!: string | undefined;
+    displayName!: string | undefined;
+    description!: string | undefined;
 
     constructor(data?: IPermissionDto) {
         if (data) {
@@ -3570,17 +3231,24 @@ export class PermissionDto implements IPermissionDto {
         data["description"] = this.description;
         return data;
     }
+
+    clone(): PermissionDto {
+        const json = this.toJSON();
+        let result = new PermissionDto();
+        result.init(json);
+        return result;
+    }
 }
 
 export interface IPermissionDto {
-    id?: number;
-    name?: string | undefined;
-    displayName?: string | undefined;
-    description?: string | undefined;
+    id: number;
+    name: string | undefined;
+    displayName: string | undefined;
+    description: string | undefined;
 }
 
 export class PermissionDtoListResultDto implements IPermissionDtoListResultDto {
-    items?: PermissionDto[] | undefined;
+    items!: PermissionDto[] | undefined;
 
     constructor(data?: IPermissionDtoListResultDto) {
         if (data) {
@@ -3617,10 +3285,17 @@ export class PermissionDtoListResultDto implements IPermissionDtoListResultDto {
         }
         return data;
     }
+
+    clone(): PermissionDtoListResultDto {
+        const json = this.toJSON();
+        let result = new PermissionDtoListResultDto();
+        result.init(json);
+        return result;
+    }
 }
 
 export interface IPermissionDtoListResultDto {
-    items?: PermissionDto[] | undefined;
+    items: PermissionDto[] | undefined;
 }
 
 export class RegisterInput implements IRegisterInput {
@@ -3629,7 +3304,7 @@ export class RegisterInput implements IRegisterInput {
     userName!: string;
     emailAddress!: string;
     password!: string;
-    captchaResponse?: string | undefined;
+    captchaResponse!: string | undefined;
 
     constructor(data?: IRegisterInput) {
         if (data) {
@@ -3668,6 +3343,13 @@ export class RegisterInput implements IRegisterInput {
         data["captchaResponse"] = this.captchaResponse;
         return data;
     }
+
+    clone(): RegisterInput {
+        const json = this.toJSON();
+        let result = new RegisterInput();
+        result.init(json);
+        return result;
+    }
 }
 
 export interface IRegisterInput {
@@ -3676,11 +3358,11 @@ export interface IRegisterInput {
     userName: string;
     emailAddress: string;
     password: string;
-    captchaResponse?: string | undefined;
+    captchaResponse: string | undefined;
 }
 
 export class RegisterOutput implements IRegisterOutput {
-    canLogin?: boolean;
+    canLogin!: boolean;
 
     constructor(data?: IRegisterOutput) {
         if (data) {
@@ -3709,10 +3391,17 @@ export class RegisterOutput implements IRegisterOutput {
         data["canLogin"] = this.canLogin;
         return data;
     }
+
+    clone(): RegisterOutput {
+        const json = this.toJSON();
+        let result = new RegisterOutput();
+        result.init(json);
+        return result;
+    }
 }
 
 export interface IRegisterOutput {
-    canLogin?: boolean;
+    canLogin: boolean;
 }
 
 export class ResetPasswordDto implements IResetPasswordDto {
@@ -3751,6 +3440,13 @@ export class ResetPasswordDto implements IResetPasswordDto {
         data["newPassword"] = this.newPassword;
         return data;
     }
+
+    clone(): ResetPasswordDto {
+        const json = this.toJSON();
+        let result = new ResetPasswordDto();
+        result.init(json);
+        return result;
+    }
 }
 
 export interface IResetPasswordDto {
@@ -3760,12 +3456,12 @@ export interface IResetPasswordDto {
 }
 
 export class RoleDto implements IRoleDto {
-    id?: number;
+    id!: number;
     name!: string;
     displayName!: string;
-    normalizedName?: string | undefined;
-    description?: string | undefined;
-    grantedPermissions?: string[] | undefined;
+    normalizedName!: string | undefined;
+    description!: string | undefined;
+    grantedPermissions!: string[] | undefined;
 
     constructor(data?: IRoleDto) {
         if (data) {
@@ -3812,19 +3508,26 @@ export class RoleDto implements IRoleDto {
         }
         return data;
     }
+
+    clone(): RoleDto {
+        const json = this.toJSON();
+        let result = new RoleDto();
+        result.init(json);
+        return result;
+    }
 }
 
 export interface IRoleDto {
-    id?: number;
+    id: number;
     name: string;
     displayName: string;
-    normalizedName?: string | undefined;
-    description?: string | undefined;
-    grantedPermissions?: string[] | undefined;
+    normalizedName: string | undefined;
+    description: string | undefined;
+    grantedPermissions: string[] | undefined;
 }
 
 export class RoleDtoListResultDto implements IRoleDtoListResultDto {
-    items?: RoleDto[] | undefined;
+    items!: RoleDto[] | undefined;
 
     constructor(data?: IRoleDtoListResultDto) {
         if (data) {
@@ -3861,15 +3564,22 @@ export class RoleDtoListResultDto implements IRoleDtoListResultDto {
         }
         return data;
     }
+
+    clone(): RoleDtoListResultDto {
+        const json = this.toJSON();
+        let result = new RoleDtoListResultDto();
+        result.init(json);
+        return result;
+    }
 }
 
 export interface IRoleDtoListResultDto {
-    items?: RoleDto[] | undefined;
+    items: RoleDto[] | undefined;
 }
 
 export class RoleDtoPagedResultDto implements IRoleDtoPagedResultDto {
-    items?: RoleDto[] | undefined;
-    totalCount?: number;
+    items!: RoleDto[] | undefined;
+    totalCount!: number;
 
     constructor(data?: IRoleDtoPagedResultDto) {
         if (data) {
@@ -3908,19 +3618,26 @@ export class RoleDtoPagedResultDto implements IRoleDtoPagedResultDto {
         data["totalCount"] = this.totalCount;
         return data;
     }
+
+    clone(): RoleDtoPagedResultDto {
+        const json = this.toJSON();
+        let result = new RoleDtoPagedResultDto();
+        result.init(json);
+        return result;
+    }
 }
 
 export interface IRoleDtoPagedResultDto {
-    items?: RoleDto[] | undefined;
-    totalCount?: number;
+    items: RoleDto[] | undefined;
+    totalCount: number;
 }
 
 export class RoleEditDto implements IRoleEditDto {
-    id?: number;
+    id!: number;
     name!: string;
     displayName!: string;
-    description?: string | undefined;
-    isStatic?: boolean;
+    description!: string | undefined;
+    isStatic!: boolean;
 
     constructor(data?: IRoleEditDto) {
         if (data) {
@@ -3957,23 +3674,30 @@ export class RoleEditDto implements IRoleEditDto {
         data["isStatic"] = this.isStatic;
         return data;
     }
+
+    clone(): RoleEditDto {
+        const json = this.toJSON();
+        let result = new RoleEditDto();
+        result.init(json);
+        return result;
+    }
 }
 
 export interface IRoleEditDto {
-    id?: number;
+    id: number;
     name: string;
     displayName: string;
-    description?: string | undefined;
-    isStatic?: boolean;
+    description: string | undefined;
+    isStatic: boolean;
 }
 
 export class RoleListDto implements IRoleListDto {
-    id?: number;
-    name?: string | undefined;
-    displayName?: string | undefined;
-    isStatic?: boolean;
-    isDefault?: boolean;
-    creationTime?: Date;
+    id!: number;
+    name!: string | undefined;
+    displayName!: string | undefined;
+    isStatic!: boolean;
+    isDefault!: boolean;
+    creationTime!: moment.Moment;
 
     constructor(data?: IRoleListDto) {
         if (data) {
@@ -3991,7 +3715,7 @@ export class RoleListDto implements IRoleListDto {
             this.displayName = _data["displayName"];
             this.isStatic = _data["isStatic"];
             this.isDefault = _data["isDefault"];
-            this.creationTime = _data["creationTime"] ? new Date(_data["creationTime"].toString()) : <any>undefined;
+            this.creationTime = _data["creationTime"] ? moment(_data["creationTime"].toString()) : <any>undefined;
         }
     }
 
@@ -4012,19 +3736,26 @@ export class RoleListDto implements IRoleListDto {
         data["creationTime"] = this.creationTime ? this.creationTime.toISOString() : <any>undefined;
         return data;
     }
+
+    clone(): RoleListDto {
+        const json = this.toJSON();
+        let result = new RoleListDto();
+        result.init(json);
+        return result;
+    }
 }
 
 export interface IRoleListDto {
-    id?: number;
-    name?: string | undefined;
-    displayName?: string | undefined;
-    isStatic?: boolean;
-    isDefault?: boolean;
-    creationTime?: Date;
+    id: number;
+    name: string | undefined;
+    displayName: string | undefined;
+    isStatic: boolean;
+    isDefault: boolean;
+    creationTime: moment.Moment;
 }
 
 export class RoleListDtoListResultDto implements IRoleListDtoListResultDto {
-    items?: RoleListDto[] | undefined;
+    items!: RoleListDto[] | undefined;
 
     constructor(data?: IRoleListDtoListResultDto) {
         if (data) {
@@ -4061,10 +3792,17 @@ export class RoleListDtoListResultDto implements IRoleListDtoListResultDto {
         }
         return data;
     }
+
+    clone(): RoleListDtoListResultDto {
+        const json = this.toJSON();
+        let result = new RoleListDtoListResultDto();
+        result.init(json);
+        return result;
+    }
 }
 
 export interface IRoleListDtoListResultDto {
-    items?: RoleListDto[] | undefined;
+    items: RoleListDto[] | undefined;
 }
 
 export enum TenantAvailabilityState {
@@ -4074,10 +3812,10 @@ export enum TenantAvailabilityState {
 }
 
 export class TenantDto implements ITenantDto {
-    id?: number;
+    id!: number;
     tenancyName!: string;
     name!: string;
-    isActive?: boolean;
+    isActive!: boolean;
 
     constructor(data?: ITenantDto) {
         if (data) {
@@ -4112,18 +3850,25 @@ export class TenantDto implements ITenantDto {
         data["isActive"] = this.isActive;
         return data;
     }
+
+    clone(): TenantDto {
+        const json = this.toJSON();
+        let result = new TenantDto();
+        result.init(json);
+        return result;
+    }
 }
 
 export interface ITenantDto {
-    id?: number;
+    id: number;
     tenancyName: string;
     name: string;
-    isActive?: boolean;
+    isActive: boolean;
 }
 
 export class TenantDtoPagedResultDto implements ITenantDtoPagedResultDto {
-    items?: TenantDto[] | undefined;
-    totalCount?: number;
+    items!: TenantDto[] | undefined;
+    totalCount!: number;
 
     constructor(data?: ITenantDtoPagedResultDto) {
         if (data) {
@@ -4162,17 +3907,24 @@ export class TenantDtoPagedResultDto implements ITenantDtoPagedResultDto {
         data["totalCount"] = this.totalCount;
         return data;
     }
+
+    clone(): TenantDtoPagedResultDto {
+        const json = this.toJSON();
+        let result = new TenantDtoPagedResultDto();
+        result.init(json);
+        return result;
+    }
 }
 
 export interface ITenantDtoPagedResultDto {
-    items?: TenantDto[] | undefined;
-    totalCount?: number;
+    items: TenantDto[] | undefined;
+    totalCount: number;
 }
 
 export class TenantLoginInfoDto implements ITenantLoginInfoDto {
-    id?: number;
-    tenancyName?: string | undefined;
-    name?: string | undefined;
+    id!: number;
+    tenancyName!: string | undefined;
+    name!: string | undefined;
 
     constructor(data?: ITenantLoginInfoDto) {
         if (data) {
@@ -4205,19 +3957,25 @@ export class TenantLoginInfoDto implements ITenantLoginInfoDto {
         data["name"] = this.name;
         return data;
     }
+
+    clone(): TenantLoginInfoDto {
+        const json = this.toJSON();
+        let result = new TenantLoginInfoDto();
+        result.init(json);
+        return result;
+    }
 }
 
 export interface ITenantLoginInfoDto {
-    id?: number;
-    tenancyName?: string | undefined;
-    name?: string | undefined;
+    id: number;
+    tenancyName: string | undefined;
+    name: string | undefined;
 }
 
 export class UpdateBoardModel implements IUpdateBoardModel {
-    color?: string | undefined;
-    owner?: string | undefined;
-    id?: number;
-    name?: string | undefined;
+    color!: string | undefined;
+    id!: number;
+    name!: string | undefined;
 
     constructor(data?: IUpdateBoardModel) {
         if (data) {
@@ -4231,7 +3989,6 @@ export class UpdateBoardModel implements IUpdateBoardModel {
     init(_data?: any) {
         if (_data) {
             this.color = _data["color"];
-            this.owner = _data["owner"];
             this.id = _data["id"];
             this.name = _data["name"];
         }
@@ -4247,23 +4004,28 @@ export class UpdateBoardModel implements IUpdateBoardModel {
     toJSON(data?: any) {
         data = typeof data === 'object' ? data : {};
         data["color"] = this.color;
-        data["owner"] = this.owner;
         data["id"] = this.id;
         data["name"] = this.name;
         return data;
     }
+
+    clone(): UpdateBoardModel {
+        const json = this.toJSON();
+        let result = new UpdateBoardModel();
+        result.init(json);
+        return result;
+    }
 }
 
 export interface IUpdateBoardModel {
-    color?: string | undefined;
-    owner?: string | undefined;
-    id?: number;
-    name?: string | undefined;
+    color: string | undefined;
+    id: number;
+    name: string | undefined;
 }
 
 export class UpdateFriendModel implements IUpdateFriendModel {
-    id?: number;
-    introduce?: string | undefined;
+    id!: number;
+    introduce!: string | undefined;
 
     constructor(data?: IUpdateFriendModel) {
         if (data) {
@@ -4294,24 +4056,31 @@ export class UpdateFriendModel implements IUpdateFriendModel {
         data["introduce"] = this.introduce;
         return data;
     }
+
+    clone(): UpdateFriendModel {
+        const json = this.toJSON();
+        let result = new UpdateFriendModel();
+        result.init(json);
+        return result;
+    }
 }
 
 export interface IUpdateFriendModel {
-    id?: number;
-    introduce?: string | undefined;
+    id: number;
+    introduce: string | undefined;
 }
 
 export class UserDto implements IUserDto {
-    id?: number;
+    id!: number;
     userName!: string;
     name!: string;
     surname!: string;
     emailAddress!: string;
-    isActive?: boolean;
-    fullName?: string | undefined;
-    lastLoginTime?: Date | undefined;
-    creationTime?: Date;
-    roleNames?: string[] | undefined;
+    isActive!: boolean;
+    fullName!: string | undefined;
+    lastLoginTime!: moment.Moment | undefined;
+    creationTime!: moment.Moment;
+    roleNames!: string[] | undefined;
 
     constructor(data?: IUserDto) {
         if (data) {
@@ -4331,8 +4100,8 @@ export class UserDto implements IUserDto {
             this.emailAddress = _data["emailAddress"];
             this.isActive = _data["isActive"];
             this.fullName = _data["fullName"];
-            this.lastLoginTime = _data["lastLoginTime"] ? new Date(_data["lastLoginTime"].toString()) : <any>undefined;
-            this.creationTime = _data["creationTime"] ? new Date(_data["creationTime"].toString()) : <any>undefined;
+            this.lastLoginTime = _data["lastLoginTime"] ? moment(_data["lastLoginTime"].toString()) : <any>undefined;
+            this.creationTime = _data["creationTime"] ? moment(_data["creationTime"].toString()) : <any>undefined;
             if (Array.isArray(_data["roleNames"])) {
                 this.roleNames = [] as any;
                 for (let item of _data["roleNames"])
@@ -4366,24 +4135,31 @@ export class UserDto implements IUserDto {
         }
         return data;
     }
+
+    clone(): UserDto {
+        const json = this.toJSON();
+        let result = new UserDto();
+        result.init(json);
+        return result;
+    }
 }
 
 export interface IUserDto {
-    id?: number;
+    id: number;
     userName: string;
     name: string;
     surname: string;
     emailAddress: string;
-    isActive?: boolean;
-    fullName?: string | undefined;
-    lastLoginTime?: Date | undefined;
-    creationTime?: Date;
-    roleNames?: string[] | undefined;
+    isActive: boolean;
+    fullName: string | undefined;
+    lastLoginTime: moment.Moment | undefined;
+    creationTime: moment.Moment;
+    roleNames: string[] | undefined;
 }
 
 export class UserDtoPagedResultDto implements IUserDtoPagedResultDto {
-    items?: UserDto[] | undefined;
-    totalCount?: number;
+    items!: UserDto[] | undefined;
+    totalCount!: number;
 
     constructor(data?: IUserDtoPagedResultDto) {
         if (data) {
@@ -4422,19 +4198,26 @@ export class UserDtoPagedResultDto implements IUserDtoPagedResultDto {
         data["totalCount"] = this.totalCount;
         return data;
     }
+
+    clone(): UserDtoPagedResultDto {
+        const json = this.toJSON();
+        let result = new UserDtoPagedResultDto();
+        result.init(json);
+        return result;
+    }
 }
 
 export interface IUserDtoPagedResultDto {
-    items?: UserDto[] | undefined;
-    totalCount?: number;
+    items: UserDto[] | undefined;
+    totalCount: number;
 }
 
 export class UserLoginInfoDto implements IUserLoginInfoDto {
-    id?: number;
-    name?: string | undefined;
-    surname?: string | undefined;
-    userName?: string | undefined;
-    emailAddress?: string | undefined;
+    id!: number;
+    name!: string | undefined;
+    surname!: string | undefined;
+    userName!: string | undefined;
+    emailAddress!: string | undefined;
 
     constructor(data?: IUserLoginInfoDto) {
         if (data) {
@@ -4471,14 +4254,21 @@ export class UserLoginInfoDto implements IUserLoginInfoDto {
         data["emailAddress"] = this.emailAddress;
         return data;
     }
+
+    clone(): UserLoginInfoDto {
+        const json = this.toJSON();
+        let result = new UserLoginInfoDto();
+        result.init(json);
+        return result;
+    }
 }
 
 export interface IUserLoginInfoDto {
-    id?: number;
-    name?: string | undefined;
-    surname?: string | undefined;
-    userName?: string | undefined;
-    emailAddress?: string | undefined;
+    id: number;
+    name: string | undefined;
+    surname: string | undefined;
+    userName: string | undefined;
+    emailAddress: string | undefined;
 }
 
 export class ApiException extends Error {
@@ -4510,8 +4300,4 @@ function throwException(message: string, status: number, response: string, heade
         throw result;
     else
         throw new ApiException(message, status, response, headers, null);
-}
-
-function isAxiosError(obj: any): obj is AxiosError {
-    return obj && obj.isAxiosError === true;
 }

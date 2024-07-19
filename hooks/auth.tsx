@@ -1,8 +1,9 @@
-import React, { FC, ReactNode } from "react";
+import React, { FC, ReactNode, useEffect } from "react";
 import { useRouter, useSegments } from "expo-router";
 import { useRecoilState } from "recoil";
 import { userCredentials } from '@/constants/Atoms';
 import { IAuthenticateResultModel } from "@/shared/friends-and-debt/friends-and-debt";
+import { accessToken, setAccessToken } from "./app-initializer";
 
 type CredentialsContext = {
   signIn: (userCredentials: IAuthenticateResultModel) => void;
@@ -28,8 +29,10 @@ export function useAuth() {
 function useProtectedRoute(user: IAuthenticateResultModel | null) {
   const segments = useSegments();
   const router = useRouter();
+  setAccessToken(user);
   React.useEffect(() => {
     const inAuthGroup = segments[0] === "(auth)";
+
     if ((!user && !inAuthGroup) || (user?.accessToken == "")) {
       router.replace("/login");
     }
@@ -42,6 +45,7 @@ function useProtectedRoute(user: IAuthenticateResultModel | null) {
 export const Provider: FC<AuthProviderProps> = (props) => {
   const [user, setAuth] = useRecoilState<IAuthenticateResultModel | null>(userCredentials);
   useProtectedRoute(user);
+
   return (
     <AuthContext.Provider
       value={{

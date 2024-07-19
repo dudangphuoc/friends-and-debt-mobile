@@ -5,89 +5,37 @@ import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
 import { ThemedTextInput } from "@/components/ThemedTextInput";
 import { useAuth } from "@/hooks/auth";
-import { friendsAndDebtApi } from "@/hooks/app-initializer";
+import {  tokenAuthFriendsAndDebtApi } from "@/hooks/app-initializer";
 import { AuthenticateModel } from "@/shared/friends-and-debt/friends-and-debt";
 import { notifyMessage } from "@/components/Toast";
 
-const checkBiometrics = async () => {
-  const compatible = await LocalAuthentication.hasHardwareAsync();
-  if (!compatible) {
-    // Thiết bị không hỗ trợ xác thực sinh trắc học
-    return false;
-  }
-
-  const enrolled = await LocalAuthentication.isEnrolledAsync();
-  if (!enrolled) {
-    // Người dùng chưa đăng ký vân tay/Face ID
-    return false;
-  }
-
-  return true;
-};
 
 export default function LoginScreen() {
   const [email, setEmail] = useState("admin");
   const [password, setPassword] = useState("123qwe");
-  const [biometrics, setBiometrics] = useState(false);
   const { signIn } = useAuth();
 
-  const authenticate = async () => {
-    try {
-      const result = await LocalAuthentication.authenticateAsync({
-        promptMessage: 'Xác thực bằng vân tay',
-        cancelLabel: 'Hủy',
-        disableDeviceFallback: true, // Tắt tùy chọn nhập mã PIN/mật khẩu
-      });
-  
-      if (result.success) {
-        // Xác thực thành côngooooooooooooo
-        setEmail("user123");
-        setPassword("123qwe");
-        onLogin();
-        
-      } else {
-        // Xác thực thất bại
-      }
-    } catch (error) {
-      console.error(error);
-      // Xử lý lỗi
-    }
-  };
-
-  const  onLogin = async () => {
+  const onLogin = async () => {
     try {
       var model = new AuthenticateModel()
       model.userNameOrEmailAddress = email;
       model.password = password;
+      var result =  await tokenAuthFriendsAndDebtApi().authenticate(model);
+      signIn(result);
+      console.log(result);
+      // friendsAndDebtApi().authenticate(model)
+      // .then((response) => {
+      //   signIn(response);
+      // })
+      // .catch((error) => {
+      //   notifyMessage(error.response.error.details);
+      // });
 
-      friendsAndDebtApi().authenticate(model)
-      .then((response) => {
-        console.log(response);
-        signIn(response);
-      })
-      .catch((error) => {
-        notifyMessage(error.response.error.details);
-      });
-
-
-      // if (result) {
-      //   signIn(result);
-      // }
     } catch (error:any) {
       notifyMessage(error.response.error.details);
     }
-
-  
   };
 
-  useEffect(() => {
-    // for (let i = 0; i < 10; i++) {
-    //   onLogin();
-    // }
-   
-    // checkBiometrics().then(setBiometrics);
-   
-   }, []);
 
   return (
     <ThemedView style={styles.container}>

@@ -19,6 +19,7 @@ export function ThemedTextInput({
 
   return (
     <TextInput
+      autoCapitalize='none'
       style={[
         { color },
         type === 'default' ? styles.default : undefined,
