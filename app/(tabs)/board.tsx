@@ -6,7 +6,7 @@ import { ThemedView } from '@/components/ThemedView';
 import { useRouter } from 'expo-router';
 import { FloatingAction } from "react-native-floating-action";
 import React, { useEffect, useState } from 'react';
-import CreateBoardComponent from './components/create-board';
+import CreateBoardComponent from '../../components/+create-board';
 import { accessToken, boardFriendsAndDebtApi } from '@/hooks/app-initializer';
 import { useRecoilState } from 'recoil';
 import { BoardModelPagedResultDto, CreateBoardModel, IAuthenticateResultModel } from '@/shared/friends-and-debt/friends-and-debt';
