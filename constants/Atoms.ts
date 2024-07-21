@@ -1,7 +1,7 @@
 import { atom, AtomEffect, RecoilState, useRecoilValue } from "recoil";
 import { recoilPersist } from "recoil-persist";
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { IAuthenticateResultModel } from "@/shared/friends-and-debt/friends-and-debt";
+import { AuthenticateResultModel } from "@/shared/friends-and-debt/friends-and-debt";
 
 const { persistAtom } = recoilPersist({
     key: 'recoil-persist',
@@ -34,7 +34,7 @@ const localStorageEffect = <T>(key: string) =>  ({
   });
 };
   
-export const userCredentials = atom<IAuthenticateResultModel | null>({
+export const userCredentials = atom<AuthenticateResultModel | null>({
     key: 'user',
     default: null,
     effects: [

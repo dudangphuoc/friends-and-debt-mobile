@@ -1,6 +1,7 @@
-import { Text, StyleSheet, TextInput, TextInputProps } from 'react-native';
+import { Text, StyleSheet, TextInput, TextInputProps, Keyboard, KeyboardEventName, TouchableWithoutFeedback } from 'react-native';
 
 import { useThemeColor } from '@/hooks/useThemeColor';
+import { useEffect, useRef, useState } from 'react';
 
 export type ThemedTextProps = TextInputProps & {
   lightColor?: string;
@@ -17,20 +18,44 @@ export function ThemedTextInput({
 }: ThemedTextProps) {
   const color = useThemeColor({ light: lightColor, dark: darkColor }, 'text');
 
+  const [keyboardOffset, setKeyboardOffset] = useState(0);
+  const onKeyboardShow = (event: any) => setKeyboardOffset(event.endCoordinates.height);
+  const onKeyboardHide = () => setKeyboardOffset(0);
+  const keyboardDidShowListener = useRef<any>();
+  const keyboardDidHideListener = useRef<any>();
+  useEffect(() => {
+    keyboardDidShowListener.current = Keyboard.addListener('keyboardWillShow', onKeyboardShow);
+    keyboardDidHideListener.current = Keyboard.addListener('keyboardWillHide', onKeyboardHide);
+
+    return () => {
+      keyboardDidShowListener.current.remove();
+      keyboardDidHideListener.current.remove();
+    };
+  }, []);
+
   return (
-    <TextInput
-      autoCapitalize='none'
-      style={[
-        { color },
-        type === 'default' ? styles.default : undefined,
-        type === 'title' ? styles.title : undefined,
-        type === 'defaultSemiBold' ? styles.defaultSemiBold : undefined,
-        type === 'subtitle' ? styles.subtitle : undefined,
-        type === 'link' ? styles.link : undefined,
-        style,
-      ]}
-      {...rest}
-    />
+    <>
+      <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
+        <TextInput
+          enablesReturnKeyAutomatically={true}
+          autoCapitalize='none'
+          clearButtonMode="while-editing"
+          returnKeyType='done'
+          style={[
+            { color },
+            type === 'default' ? styles.default : undefined,
+            type === 'title' ? styles.title : undefined,
+            type === 'defaultSemiBold' ? styles.defaultSemiBold : undefined,
+            type === 'subtitle' ? styles.subtitle : undefined,
+            type === 'link' ? styles.link : undefined,
+            style,
+          ]}
+          {...rest}
+        />
+
+      </TouchableWithoutFeedback>
+
+    </>
   );
 }
 

@@ -17,9 +17,15 @@ export default function LoginScreen() {
 
   const onLogin = async () => {
     try {
-      var model = new AuthenticateModel()
-      model.userNameOrEmailAddress = email;
-      model.password = password;
+      let model:AuthenticateModel = {
+        userNameOrEmailAddress: email,
+        password: password,
+        rememberClient: true
+      };
+    
+
+      // model.userNameOrEmailAddress = email;
+      // model.password = password;
       var result =  await tokenAuthFriendsAndDebtApi().authenticate(model);
       signIn(result);
       console.log(result);

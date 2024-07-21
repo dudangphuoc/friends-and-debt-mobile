@@ -1,4 +1,4 @@
-import { Image, StyleSheet, Platform, Button, View, Modal, Alert, SafeAreaView, Pressable, ScrollView, RefreshControl } from 'react-native';
+import { Image, StyleSheet, Platform, Button, View, Modal, Alert, SafeAreaView, Pressable, ScrollView, RefreshControl, TouchableHighlight, FlatList, ListRenderItem, useColorScheme } from 'react-native';
 import { HelloWave } from '@/components/HelloWave';
 import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedText } from '@/components/ThemedText';
@@ -6,54 +6,57 @@ import { ThemedView } from '@/components/ThemedView';
 import { useRouter } from 'expo-router';
 import { FloatingAction } from "react-native-floating-action";
 import React, { useEffect, useState } from 'react';
-import CreateBoardComponent from '../../components/+create-board';
+import CreateBoardComponent from '../../components/CreateBoard';
 import { accessToken, boardFriendsAndDebtApi } from '@/hooks/app-initializer';
 import { useRecoilState } from 'recoil';
-import { BoardModelPagedResultDto, CreateBoardModel, IAuthenticateResultModel } from '@/shared/friends-and-debt/friends-and-debt';
+import { AuthenticateResultModel, BoardModel, CreateBoardModel } from '@/shared/friends-and-debt/friends-and-debt';
 import { userCredentials } from '@/constants/Atoms';
+import Swipeable from 'react-native-gesture-handler/Swipeable';
+import {
+  GestureHandlerRootView,
+} from 'react-native-gesture-handler';
+
+import Animated from 'react-native-reanimated';
+import { globalStyle } from '@/constants/Styles';
 
 export default function BoardScreen() {
-  const [user, setAuth] = useRecoilState<IAuthenticateResultModel | null>(userCredentials);
   const [modalVisible, setModalVisible] = useState(false);
   const [name, setName] = useState('');
   const [color, setColor] = useState('');
-  const [boardModelPagedResult, setBoardModelPagedResult] = useState<BoardModelPagedResultDto>();
+  const [boardsModelResult, setBoardsModelResult] = useState<BoardModel[]>();
   const [refreshing, setRefreshing] = React.useState(false);
   const router = useRouter();
-
 
   useEffect(() => {
     refreshingData();
   }, []);
 
   const refreshingData = () => {
-    boardFriendsAndDebtApi().getAll("", 0, 100)
-    .then((response) => {
-      console.log(response);
-      setBoardModelPagedResult(response)
-    })
-    .catch((e) => {
-      console.log(e);
-    });
+    boardFriendsAndDebtApi().getBoardsByUser()
+      .then((response) => {
+        setBoardsModelResult(response)
+      })
+      .catch((e) => {
+        console.log(e);
+      });
   };
-
 
   const actions = [
     {
       text: "Add new board",
-      icon: require("@/assets/images/partial-react-logo.png"),
+      icon: require("@/assets/icons/board.png"),
       name: "bt_add_board",
       position: 2
     }
   ];
-  
-  const onRefresh = React.useCallback(() => {
+
+  const onRefresh = () => {
     setRefreshing(true);
     setTimeout(() => {
       refreshingData();
       setRefreshing(false);
-    }, 2000);
-  }, []);
+    }, 1000);
+  };
 
   const onPressButton = (name?: string) => {
     if (name == "bt_add_board")
@@ -61,14 +64,19 @@ export default function BoardScreen() {
   };
 
   const onCreateBoard = async () => {
-    console.log('accessToken', user);
-    console.log('Create board', name, color);
     setModalVisible(!modalVisible);
-    var model = new CreateBoardModel();
-    model.name = name;
-    model.color = color;
-    await boardFriendsAndDebtApi().create(model);
+    var modelInstance: CreateBoardModel = {
+      name: name,
+      color: color
+    }
+    await boardFriendsAndDebtApi().create(modelInstance);
     refreshingData();
+  };
+
+  const onSwipeFromRight = async (item: BoardModel) => {
+    await boardFriendsAndDebtApi().delete(item.id).then(async (response) => {
+        await refreshingData();
+     });
   };
 
   const renderModel = () => {
@@ -81,7 +89,6 @@ export default function BoardScreen() {
           Alert.alert('Modal has been closed.');
           setModalVisible(!modalVisible);
         }}>
-
         <SafeAreaView style={styles.safeAreaView}>
           <ThemedView style={{ flex: 1 }}>
             <ThemedView style={{ padding: 20 }} >
@@ -110,50 +117,56 @@ export default function BoardScreen() {
     );
   };
 
-  const renderBoard = () => {
-    return (
-      <>
-        {boardModelPagedResult?.items?.map((item, index) => {
-          return (
-            <ThemedView key={index} style={styles.boardItem}>
-              <ThemedText style={styles.boardTitle}>{item.name}</ThemedText>
+  const renderItem: ListRenderItem<BoardModel> = ({ item }) =>
+    
+    <GestureHandlerRootView style={[globalStyle.boarder, globalStyle.background]}>
+      <Swipeable renderRightActions={() => <RightActions item={item} 
+      />}>
+        <Pressable onPress={() => {
+          router.push(`/board-detail?boardId=${item.id}`);
+        }} >
 
-              <ThemedText style={styles.boardTitle}>
-                <ThemedText style={styles.inlineFotter}>Card: {item.cards?.length}</ThemedText>
-                <ThemedText style={styles.inlineFotter}>Member: {item.members?.length}</ThemedText>
-              </ThemedText>
+          <ThemedView style={globalStyle.item}>
+            <ThemedText type='defaultSemiBold'>{item.name}</ThemedText>
+            <ThemedText>
+              <ThemedText type='default' style={globalStyle.inlineFotter}>Card: {item.cards?.length} </ThemedText> 
+              <ThemedText type='default' style={globalStyle.inlineFotter}>Member: {item.members?.length}</ThemedText>
+            </ThemedText>
+          </ThemedView>
+        </Pressable>
 
-            </ThemedView>
-          );
-        })}
-      </>
-    );
+      </Swipeable>
+    </GestureHandlerRootView>
+    ;
 
-  }
-
+  const RightActions = ({ item }: { item: BoardModel }) => (
+    <Pressable style={[globalStyle.rightActions, globalStyle.boarder]} onPress={async () =>{await onSwipeFromRight(item)}}>
+        <ThemedText style={styles.text} >Delete</ThemedText>
+    </Pressable>
+  );
+  
   return (
     < >
-     <ScrollView
-          contentContainerStyle={styles.scrollView}
-          refreshControl={
-            <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
-          }>
-      <ParallaxScrollView
-        headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-        headerImage={
-          <Image
-            source={require('@/assets/images/partial-react-logo.png')}
-            style={styles.reactLogo}
-          />
-        }>
+      <Animated.View
+        style={[
+          globalStyle.header
+        ]}>
+        <Image
+          source={require('@/assets/images/signpost.png')}
+          style={styles.reactLogo} />
+      </Animated.View>
 
-       
-          {renderBoard()}
+      <FlatList
+        style={[styles.scrollView]}
+        // scrollEventThrottle={16}
+        data={boardsModelResult ?? []}
+        renderItem={renderItem}
         
-      </ParallaxScrollView>
-      </ScrollView>
-
-
+        keyExtractor={(item: BoardModel) => item.id.toString()}
+        onRefresh={onRefresh}
+        refreshing={refreshing}
+      />
+      
       {renderModel()}
       <FloatingAction
         position="right"
@@ -161,11 +174,19 @@ export default function BoardScreen() {
         actions={actions}
         onPressItem={onPressButton}
       />
+
     </>
   );
 }
 
 const styles = StyleSheet.create({
+
+
+  actionText: {
+    color: 'white',
+    fontWeight: '600',
+    padding: 20,
+  },
   form: {
     flex: 1,
     justifyContent: 'flex-start',
@@ -193,11 +214,11 @@ const styles = StyleSheet.create({
   },
 
   reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
+    height: 250,
+    width: "auto",
+    resizeMode: 'cover',
+    justifyContent: 'flex-end',
+    alignItems: 'flex-end',
   },
 
   inlineAction: {
@@ -208,38 +229,12 @@ const styles = StyleSheet.create({
     borderTopColor: 'grey',
     borderTopWidth: 1,
   },
-
-  boardItem: {
-    flexDirection: 'column',
-    justifyContent: 'space-between',
-    alignItems: 'flex-start',
-    padding: 16,
-    borderWidth: 1,
-    borderStyle: 'solid',
-    borderCurve: 'circular',
-    backgroundColor: '#313335',
-    // borderBottomColor: 'grey',
-    // borderBottomWidth: 1,
-    borderRadius: 8,
-    borderColor: '#444746',
-    marginBottom: 8,
-    height: 100,
-  },
-
-  boardTitle: {
-    fontSize: 24,
-    fontWeight: 'bold',
-  },
-
-  inlineFotter: {
-    marginVertical: 16,
-    marginRight: 16,
-  },
-
   text: {
     color: "white",
   },
   scrollView: {
     flex: 1,
+  },
+  wrapper: {
   },
 });
