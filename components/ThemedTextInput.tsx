@@ -2,6 +2,7 @@ import { Text, StyleSheet, TextInput, TextInputProps, Keyboard, KeyboardEventNam
 
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { useEffect, useRef, useState } from 'react';
+import React from 'react';
 
 export type ThemedTextProps = TextInputProps & {
   lightColor?: string;

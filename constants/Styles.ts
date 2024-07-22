@@ -1,5 +1,19 @@
 import { StyleSheet } from 'react-native';
 
+export const lightStyle = StyleSheet.create({
+    glassmorphism: {
+        // borderRadius: 10,
+        borderWidth: 1,
+        borderColor: "rgba( 255, 255, 255, 0.2)",
+        borderStyle: 'solid',
+        shadowOffset: { width: 8, height: 32 },
+        shadowOpacity: 0,
+        shadowRadius: 0,
+        textShadowColor: 'rgba( 31, 38, 135, 0.37 )',
+        
+    }
+});
+
 export const globalStyle = StyleSheet.create({
     background: {
         backgroundColor: '#313335',
@@ -36,13 +50,13 @@ export const globalStyle = StyleSheet.create({
     describe: {
         fontSize: 16,
     },
-    
+
     inlineFotter: {
     },
-    
+
     header: {
         height: 250,
         overflow: 'hidden',
-      },
+    },
 
 });

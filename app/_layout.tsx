@@ -10,15 +10,16 @@ import { Provider } from '@/hooks/auth';
 import { RecoilRoot, useRecoilState, useRecoilValue } from 'recoil';
 import { ThemedView } from '@/components/ThemedView';
 import { ThemedText } from '@/components/ThemedText';
+import React from 'react';
 
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 
 export default function RootLayout() {
-  
+
   const [isReady, setIsReady] = useState(false);
   const colorScheme = useColorScheme();
-  
+
   const [loaded] = useFonts({
     SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
   });
@@ -52,7 +53,8 @@ export default function RootLayout() {
     );
   return (
     <RecoilRoot>
-      <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+      <ThemeProvider value={DefaultTheme}>
+      {/* <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}> */}
         <Provider>
           <Stack screenOptions={{ headerShown: false, }} />
         </Provider>
