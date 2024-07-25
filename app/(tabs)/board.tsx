@@ -146,27 +146,24 @@ export default function BoardScreen() {
   );
   
   return (
-    < >
-      <Animated.View
-        style={[
-          globalStyle.header
+    <>
+      <ThemedView
+        style={[ styles.form
         ]}>
-        <Image
-          source={require('@/assets/images/signpost.png')}
-          style={styles.reactLogo} />
-      </Animated.View>
+        <SafeAreaView style={styles.safeAreaView}>
 
-      <FlatList
+        <FlatList
         style={[styles.scrollView]}
         // scrollEventThrottle={16}
         data={boardsModelResult ?? []}
         renderItem={renderItem}
-        
         keyExtractor={(item: BoardModel) => item.id.toString()}
         onRefresh={onRefresh}
         refreshing={refreshing}
       />
-      
+
+        </SafeAreaView>
+      </ThemedView>
       {renderModel()}
       <FloatingAction
         position="right"
@@ -180,19 +177,18 @@ export default function BoardScreen() {
 }
 
 const styles = StyleSheet.create({
-
-
-  actionText: {
-    color: 'white',
-    fontWeight: '600',
-    padding: 20,
-  },
   form: {
     flex: 1,
     justifyContent: 'flex-start',
     alignItems: 'stretch',
     width: '100%',
   },
+  actionText: {
+    color: 'white',
+    fontWeight: '600',
+    padding: 20,
+  },
+
 
   safeAreaView: {
     flex: 1, // Đảm bảo SafeAreaView chiếm toàn bộ màn hình

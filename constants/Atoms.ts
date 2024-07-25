@@ -41,3 +41,13 @@ export const userCredentials = atom<AuthenticateResultModel | null>({
         localStorageEffect('current_user'),
       ]
 });
+
+export const userHeaderText = atom<string | null>({
+    key: 'userHeaderText',
+    default: '',
+});
+
+export const userHeaderLabel = atom<string | null>({
+    key: 'userHeaderLabel',
+    default: '',
+});

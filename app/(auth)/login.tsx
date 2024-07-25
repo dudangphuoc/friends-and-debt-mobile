@@ -34,8 +34,6 @@ export default function LoginScreen() {
 
   return (
 
-
-
     <ImageBackground style={[styles.container, styles.center]}
 
       blurRadius={5}
@@ -43,7 +41,7 @@ export default function LoginScreen() {
       source={require('@/assets/images/pngegg.png')}
     >
       <BlurView intensity={10} tint="light"
-        style={[styles.container_wraper, styles.center, lightStyle.glassmorphism]}>
+        style={[styles.container_wraper, styles.center, lightStyle.glassmorphism, lightStyle.neonBorder]}>
         <ThemedText style={{ fontSize: 24 }}>Friends And Debt</ThemedText>
         <ThemedTextInput
           style={styles.textInput}
@@ -53,7 +51,6 @@ export default function LoginScreen() {
           placeholderTextColor="#000"
           onFocus={() => setIsFocused(true)}
           onBlur={() => setIsFocused(false)}
-
         />
         <ThemedTextInput
           style={styles.textInput}
@@ -66,7 +63,6 @@ export default function LoginScreen() {
           autoCapitalize='none'
           onFocus={() => setIsFocused(true)}
           onBlur={() => setIsFocused(false)}
-
         />
         <ThemedView style={styles.separator} />
         <Pressable onPress={onLogin} style={[styles.button, lightStyle.glassmorphism]}>
@@ -76,12 +72,11 @@ export default function LoginScreen() {
 
     </ImageBackground>
 
-
   );
 }
 
 const styles = StyleSheet.create({
-
+ 
   center: {
     alignItems: "center",
     justifyContent: "center",

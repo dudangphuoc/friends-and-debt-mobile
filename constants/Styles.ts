@@ -11,7 +11,16 @@ export const lightStyle = StyleSheet.create({
         shadowRadius: 0,
         textShadowColor: 'rgba( 31, 38, 135, 0.37 )',
         
-    }
+    },
+    neonBorder: {
+        borderWidth: 2,
+        borderColor: 'transparent',
+        borderRadius: 10,
+        shadowColor: 'blue', // Màu neon
+        shadowOffset: { width: 0, height: 0 },
+        shadowOpacity: 1,
+        shadowRadius: 10,
+      },
 });
 
 export const globalStyle = StyleSheet.create({
@@ -58,5 +67,60 @@ export const globalStyle = StyleSheet.create({
         height: 250,
         overflow: 'hidden',
     },
+
+});
+
+export const mainColor = '#408DF0';
+export const subColor = '#F0A840';
+export const backgroundColor = '#313335';
+export const borderColor = '#444746';
+export const textColor = '#FFFFFF';
+
+export const typographyStyle = StyleSheet.create({
+    small_Bold: {
+        fontSize: 11,
+        lineHeight: 13,
+        fontWeight: 600,
+        letterSpacing: 0.06,
+    },
+    small_Medium: {
+        fontSize: 11,
+        lineHeight: 13,
+        fontWeight: 500,
+        letterSpacing: 0.06,
+    },
+    small_Regular: {
+        fontSize: 11,
+        lineHeight: 13,
+        fontWeight: 400,
+        letterSpacing: 0.07,
+    },
+
+    caption_regular: {
+        fontSize: 12,
+        fontWeight: 400,
+        lineHeight: 16,
+        
+    },
+    caption_bold: {
+        fontSize: 12,
+        fontWeight: 500,
+        lineHeight: 16,
+    },
+
+    subheadline_Regular: {
+        fontSize: 15,
+        lineHeight: 20,
+        fontWeight: 400,
+        letterSpacing: -0.24,
+    },
+    subheadline_Bold: {
+        fontSize: 15,
+        lineHeight: 20,
+        fontWeight: 600,
+        letterSpacing: -0.5,
+    },
+    
+
 
 });

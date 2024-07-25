@@ -4,6 +4,7 @@ import React, { useEffect } from 'react';
 import { TabBarIcon } from '@/components/navigation/TabBarIcon';
 import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
+import HeaderView from '@/components/HeaderView';
 
 
 export default function TabLayout() {
@@ -14,8 +15,8 @@ export default function TabLayout() {
       initialRouteName='board'
       screenOptions={{
         tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
-        headerShown: false,
-        
+        headerShown: true,
+        header: () => <HeaderView/>,
       }}>
 
       <Tabs.Screen
@@ -47,7 +48,7 @@ export default function TabLayout() {
           ),
         }}
       />
-       <Tabs.Screen
+      <Tabs.Screen
         name="board-detail"
         options={{
           title: 'BoardDetail',

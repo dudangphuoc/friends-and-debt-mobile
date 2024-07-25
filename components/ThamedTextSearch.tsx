@@ -1,6 +1,7 @@
-import { Text, type TextProps, StyleSheet, TouchableWithoutFeedback, TextInput, Keyboard } from 'react-native';
+import { Text, type TextProps, StyleSheet, TouchableWithoutFeedback, TextInput, Keyboard, Animated, TouchableOpacity } from 'react-native';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { useEffect, useRef, useState } from 'react';
+import Ionicons from '@expo/vector-icons/Ionicons';
 
 export type ThemedTextSearchProps = TextProps & {
   lightColor?: string;
@@ -15,76 +16,60 @@ export function ThemedTextSearch({
   type = 'default',
   ...rest
 }: ThemedTextSearchProps) {
-    const color = useThemeColor({ light: lightColor, dark: darkColor }, 'text');
+  const color = useThemeColor({ light: lightColor, dark: darkColor }, 'text');
+  const [isFocused, setIsFocused] = useState(false);
+  const searchBarWidth = useRef(new Animated.Value(350)).current;
+  const searchBarWidth2 = useRef(new Animated.Value(350)).current;
+  const handleFocus = () => {
+    setIsFocused(true);
+    Animated.timing(searchBarWidth, {
+      toValue: 350, // Chiều rộng khi focus
+      duration: 350,
+      useNativeDriver: false,
+    }).start();
+  };
 
-    const [keyboardOffset, setKeyboardOffset] = useState(0);
-    const onKeyboardShow = (event: any) => setKeyboardOffset(event.endCoordinates.height);
-    const onKeyboardHide = () => setKeyboardOffset(0);
-    const keyboardDidShowListener = useRef<any>();
-    const keyboardDidHideListener = useRef<any>();
+  const handleBlur = () => {
+    setIsFocused(false);
+    Animated.timing(searchBarWidth, {
+      toValue: 350, // Chiều rộng ban đầu
+      duration: 350,
+      useNativeDriver: false,
+    }).start();
+  };
 
-    useEffect(() => {
-      keyboardDidShowListener.current = Keyboard.addListener('keyboardWillShow', onKeyboardShow);
-      keyboardDidHideListener.current = Keyboard.addListener('keyboardWillHide', onKeyboardHide);
-  
-      return () => {
-        keyboardDidShowListener.current.remove();
-        keyboardDidHideListener.current.remove();
-      };
-    }, []);
-
-    useEffect(() => {
-        console.log('keyboardOffset', keyboardOffset);
-    }, [keyboardOffset]);
-  
-    return (
-      <>
-        <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
-          <TextInput
-            enablesReturnKeyAutomatically={true}
-            autoCapitalize='none'
-            clearButtonMode="while-editing"
-            returnKeyType='done'
-            style={[
-              { color },
-              type === 'default' ? styles.default : undefined,
-              type === 'title' ? styles.title : undefined,
-              type === 'defaultSemiBold' ? styles.defaultSemiBold : undefined,
-              type === 'subtitle' ? styles.subtitle : undefined,
-              type === 'link' ? styles.link : undefined,
-              style,
-            ]}
-            {...rest}
-          />
-  
-        </TouchableWithoutFeedback>
-  
-      </>
-    );
+  return (
+    <>
+      <Animated.View style={[styles.container]}>
+        <TextInput
+          style={styles.input}
+          placeholder="Tìm kiếm..."
+          onFocus={handleFocus}
+          onBlur={handleBlur}
+          onTouchEnd={handleFocus}
+          textContentType="name"
+        />
+        <TouchableOpacity onPress={handleBlur}>
+          <Ionicons name={isFocused ? 'close' : 'search'} size={24} color="gray" />
+        </TouchableOpacity>
+      </Animated.View>
+    </>
+  );
 }
 
 const styles = StyleSheet.create({
-  default: {
+  container: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#f0f0f0',
+    margin: 'auto',
+    marginTop: 20,
+  },
+
+  input: {
+    flex: 1,
     fontSize: 16,
-    lineHeight: 24,
-  },
-  defaultSemiBold: {
-    fontSize: 16,
-    lineHeight: 24,
-    fontWeight: '600',
-  },
-  title: {
-    fontSize: 32,
-    fontWeight: 'bold',
-    lineHeight: 32,
-  },
-  subtitle: {
-    fontSize: 20,
-    fontWeight: 'bold',
-  },
-  link: {
-    lineHeight: 30,
-    fontSize: 16,
-    color: '#0a7ea4',
+    marginRight: 10,
+    backgroundColor: 'white',
   },
 });

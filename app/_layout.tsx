@@ -4,22 +4,17 @@ import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useState, useEffect } from 'react';
 import 'react-native-reanimated';
-
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { Provider } from '@/hooks/auth';
 import { RecoilRoot, useRecoilState, useRecoilValue } from 'recoil';
 import { ThemedView } from '@/components/ThemedView';
 import { ThemedText } from '@/components/ThemedText';
 import React from 'react';
-
+import HeaderView from '@/components/HeaderView';
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
-
 export default function RootLayout() {
-
   const [isReady, setIsReady] = useState(false);
-  const colorScheme = useColorScheme();
-
   const [loaded] = useFonts({
     SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
   });
@@ -54,11 +49,23 @@ export default function RootLayout() {
   return (
     <RecoilRoot>
       <ThemeProvider value={DefaultTheme}>
-      {/* <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}> */}
         <Provider>
-          <Stack screenOptions={{ headerShown: false, }} />
+          <Stack screenOptions={
+            {
+              headerShown: false,
+              headerStyle: {
+                backgroundColor: '#444746',
+              },
+              headerTintColor: '#fff',
+              fullScreenGestureEnabled: true,
+              animation: 'slide_from_right',
+              // header: () => <HeaderView/>,
+            }
+
+          }
+          ></Stack>
         </Provider>
       </ThemeProvider>
-  </RecoilRoot>
+    </RecoilRoot>
   );
 }

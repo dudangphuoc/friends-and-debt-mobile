@@ -18,7 +18,6 @@ export default function AuthLayout() {
       }}>
       <Tabs.Screen
         name="login"
-        
         options={{
           title: 'Login',
           headerShown: false,
