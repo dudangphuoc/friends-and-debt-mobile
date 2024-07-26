@@ -1,26 +1,44 @@
-import { Tabs } from 'expo-router';
-import React, { useEffect } from 'react';
+import { Tabs, useLocalSearchParams, useRouter } from 'expo-router';
+import React, { useEffect, useState } from 'react';
 
 import { TabBarIcon } from '@/components/navigation/TabBarIcon';
 import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import HeaderView from '@/components/HeaderView';
+import { useRecoilState } from 'recoil';
+import { userHeaderText } from '@/constants/Atoms';
 
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
-  
+  const [_, setHeaderText] = useRecoilState<string | null>(userHeaderText);
+  const [headerShown, setHeaderShown] = useState(false);
+  useEffect(() => {
+
+
+
+  }, []);
+
   return (
     <Tabs
       initialRouteName='board'
       screenOptions={{
+        tabBarHideOnKeyboard: true,
         tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
-        headerShown: true,
-        header: () => <HeaderView/>,
+        headerShown: headerShown,
+        header: () => <HeaderView />,
       }}>
 
       <Tabs.Screen
         name="index"
+        listeners={
+          {
+            tabPress: (e) => {
+              setHeaderText("index");
+              setHeaderShown(true);
+            },
+          }
+        }
         options={{
           title: 'Home',
           tabBarIcon: ({ color, focused }) => (
@@ -31,16 +49,34 @@ export default function TabLayout() {
 
       <Tabs.Screen
         name="board"
+        listeners={
+          {
+            tabPress: (e) => {
+              setHeaderText("Board");
+              setHeaderShown(true);
+            },
+          }
+        }
         options={{
           title: 'Board',
-          tabBarIcon: ({ color, focused }) => (
-            <TabBarIcon name={focused ? 'clipboard' : 'clipboard-outline'} color={color} />
-          ),
+          tabBarIcon: ({ color, focused }) => {
+            return (
+              <TabBarIcon name={focused ? 'clipboard' : 'clipboard-outline'} color={color} />
+            )
+          },
         }}
       />
 
       <Tabs.Screen
         name="setting"
+        listeners={
+          {
+            tabPress: (e) => {
+              setHeaderText("setting");
+              setHeaderShown(false);
+            },
+          }
+        }
         options={{
           title: 'Setting',
           tabBarIcon: ({ color, focused }) => (
@@ -48,8 +84,17 @@ export default function TabLayout() {
           ),
         }}
       />
+
       <Tabs.Screen
         name="board-detail"
+        listeners={
+          {
+            tabPress: (e) => {
+              setHeaderText("search");
+              setHeaderShown(false);
+            },
+          }
+        }
         options={{
           title: 'BoardDetail',
           tabBarIcon: ({ color, focused }) => (

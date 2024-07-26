@@ -71,10 +71,11 @@ export const globalStyle = StyleSheet.create({
 });
 
 export const mainColor = '#408DF0';
-export const subColor = '#F0A840';
+export const subColor = '#2060B0';
 export const backgroundColor = '#313335';
 export const borderColor = '#444746';
-export const textColor = '#FFFFFF';
+export const textColor = '#4f4f4f';
+export const textColorLight = '#f4f4f4';
 
 export const typographyStyle = StyleSheet.create({
     small_Bold: {

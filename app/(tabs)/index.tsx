@@ -4,8 +4,16 @@ import { HelloWave } from '@/components/HelloWave';
 import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
+import { useRecoilState } from 'recoil';
+import { userHeaderText } from '@/constants/Atoms';
+import { useEffect } from 'react';
 
 export default function HomeScreen() {
+  // const [headerText, setHeaderText] = useRecoilState<string | null>(userHeaderText);
+  // useEffect (() => {
+  //   setHeaderText('Home');
+  // },[]);
+  
   return (
     <ParallaxScrollView
       headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}

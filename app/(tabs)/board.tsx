@@ -18,6 +18,7 @@ import {
 
 import Animated from 'react-native-reanimated';
 import { globalStyle } from '@/constants/Styles';
+import {ThemedFilter} from '@/components/ThemedFilter';
 
 export default function BoardScreen() {
   const [modalVisible, setModalVisible] = useState(false);
@@ -144,14 +145,38 @@ export default function BoardScreen() {
         <ThemedText style={styles.text} >Delete</ThemedText>
     </Pressable>
   );
+
+  const option  = [
+    {
+      name :"Payment received",
+      value : "PaymentReceived1",
+    },
+    {
+      name :"Payment sent",
+      value : "PaymentSent2",
+    },
+    {
+      name :"Payment received",
+      value : "PaymentReceived3",
+    },
+    {
+      name :"Payment sent",
+      value : "PaymentSent4",
+    },
+  ];
+    
+  const handlePress = (value: string) => {
+  
+  };
   
   return (
     <>
+    
       <ThemedView
         style={[ styles.form
         ]}>
         <SafeAreaView style={styles.safeAreaView}>
-
+        <ThemedFilter onPress={handlePress} tags={option}/>
         <FlatList
         style={[styles.scrollView]}
         // scrollEventThrottle={16}

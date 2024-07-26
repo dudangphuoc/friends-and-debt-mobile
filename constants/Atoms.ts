@@ -51,3 +51,9 @@ export const userHeaderLabel = atom<string | null>({
     key: 'userHeaderLabel',
     default: '',
 });
+
+
+export const eventHeaderText = atom({
+  key: 'eventHeaderText',
+  default: () => {} ,
+});
