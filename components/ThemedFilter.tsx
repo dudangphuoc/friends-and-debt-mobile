@@ -2,13 +2,11 @@ import { mainColor, textColor, textColorLight } from "@/constants/Styles";
 import { ThemedText } from "./ThemedText";
 import { ThemedView } from "./ThemedView";
 import { Text, type TextProps, StyleSheet, ScrollView, KeyboardAvoidingView, Pressable , } from 'react-native';
-import React, { useState } from "react";
-
+import React, { useEffect, useState } from "react";
 type FilterProps = {
     name: string;
     value: string;
 }
-
 export type ThemedFilterProps = {
     tags: FilterProps[];
     onPress: (value: string) => void;
@@ -16,21 +14,24 @@ export type ThemedFilterProps = {
 
 export function ThemedFilter({ tags, onPress }: ThemedFilterProps) {
     const [selectedValue, setSelectedValue] = useState<string | null>('');
-    
+    useEffect(() => {}, [selectedValue]);
     const handlePress = (value: string) => {
-        setSelectedValue(value);
-        onPress(value);
+        try{
+            setSelectedValue(selectedValue == value? '': value);
+        }finally{
+             onPress(value);
+        }
     };
 
     return (
-        <KeyboardAvoidingView >
+        <KeyboardAvoidingView style={styles.container}>
             <ScrollView horizontal={true} showsHorizontalScrollIndicator={true}
                 contentContainerStyle={styles.scrollView}
             >
                 {tags.map((tag, index) => {
-                    return (<>
+                    return (
                         <Pressable onPress={() => handlePress(tag.value)} key={index}>
-                            <ThemedView key={index} style={[styles.box, selectedValue==tag.value ? styles.Selected: styles.noneSelected]}>
+                            <ThemedView style={[styles.box, selectedValue==tag.value ? styles.Selected: styles.noneSelected]}>
                                 <ThemedText style={
                                 [styles.text, {
                                     color:  selectedValue==tag.value ? textColorLight : textColor
@@ -38,7 +39,7 @@ export function ThemedFilter({ tags, onPress }: ThemedFilterProps) {
                                 type="Subheadline_Regular">{tag.name}</ThemedText>
                             </ThemedView>
                         </Pressable>
-                    </>)
+                    )
                 })}
             </ScrollView >  
         </KeyboardAvoidingView>
@@ -46,9 +47,16 @@ export function ThemedFilter({ tags, onPress }: ThemedFilterProps) {
 }
 
 const styles = StyleSheet.create({
+    container: {
+        backgroundColor: '#fff',
+        borderBottomWidth: 1,
+        borderBottomColor: '#ccc',
+    },
+
     scrollView: {
         marginVertical: 10,
     },
+
     box: {
         flexDirection: 'row',
         marginHorizontal: 5,
@@ -57,7 +65,9 @@ const styles = StyleSheet.create({
         borderStyle: 'solid',
         borderWidth: 1,
         borderColor: '#222',
+        
     },
+
     Selected: {
         backgroundColor: mainColor,
     },

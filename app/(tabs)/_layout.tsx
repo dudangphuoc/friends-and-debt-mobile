@@ -11,11 +11,9 @@ import { userHeaderText } from '@/constants/Atoms';
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
-  const [_, setHeaderText] = useRecoilState<string | null>(userHeaderText);
+  const [_, setHeaderText] = useRecoilState<string >(userHeaderText);
   const [headerShown, setHeaderShown] = useState(false);
   useEffect(() => {
-
-
 
   }, []);
 
@@ -28,7 +26,6 @@ export default function TabLayout() {
         headerShown: headerShown,
         header: () => <HeaderView />,
       }}>
-
       <Tabs.Screen
         name="index"
         listeners={

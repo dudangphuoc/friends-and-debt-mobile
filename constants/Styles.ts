@@ -1,4 +1,14 @@
 import { StyleSheet } from 'react-native';
+export const mainColor = '#408DF0';
+export const subColor = '#2060B0';
+export const accentColor = '#7FD09C';
+export const backgroundColor = '#4AA6DB';
+export const borderColor = '#444746';
+export const borderColorOffBlack = '#292D32';
+export const textColor = '#4f4f4f';
+export const textColorLight = '#f4f4f4';
+export const borderRadius = 0;
+
 
 export const lightStyle = StyleSheet.create({
     glassmorphism: {
@@ -24,6 +34,7 @@ export const lightStyle = StyleSheet.create({
 });
 
 export const globalStyle = StyleSheet.create({
+    
     background: {
         backgroundColor: '#313335',
         padding: 8,
@@ -34,18 +45,15 @@ export const globalStyle = StyleSheet.create({
     },
 
     boarder: {
-        borderWidth: 1,
         borderStyle: 'solid',
         borderCurve: 'circular',
-        borderRadius: 5,
-        borderColor: '#444746',
     },
 
     rightActions: {
         justifyContent: 'center',
         alignItems: 'center',
         height: "100%",
-        backgroundColor: '#444746',
+        backgroundColor: backgroundColor,
         paddingHorizontal: 16,
         width: 150,
     },
@@ -70,30 +78,25 @@ export const globalStyle = StyleSheet.create({
 
 });
 
-export const mainColor = '#408DF0';
-export const subColor = '#2060B0';
-export const backgroundColor = '#313335';
-export const borderColor = '#444746';
-export const textColor = '#4f4f4f';
-export const textColorLight = '#f4f4f4';
+
 
 export const typographyStyle = StyleSheet.create({
     small_Bold: {
         fontSize: 11,
         lineHeight: 13,
-        fontWeight: 600,
+        fontWeight: 'bold',
         letterSpacing: 0.06,
     },
     small_Medium: {
         fontSize: 11,
         lineHeight: 13,
-        fontWeight: 500,
+        fontWeight: 'medium',
         letterSpacing: 0.06,
     },
     small_Regular: {
         fontSize: 11,
         lineHeight: 13,
-        fontWeight: 400,
+        fontWeight: 'regular',
         letterSpacing: 0.07,
     },
 
@@ -105,23 +108,21 @@ export const typographyStyle = StyleSheet.create({
     },
     caption_bold: {
         fontSize: 12,
-        fontWeight: 500,
+        fontWeight: 'bold',
         lineHeight: 16,
     },
 
     subheadline_Regular: {
         fontSize: 15,
         lineHeight: 20,
-        fontWeight: 400,
+        fontWeight: 'regular',
         letterSpacing: -0.24,
     },
     subheadline_Bold: {
         fontSize: 15,
         lineHeight: 20,
-        fontWeight: 600,
+        fontWeight: 'bold',
         letterSpacing: -0.5,
     },
-    
-
 
 });

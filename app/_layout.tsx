@@ -10,7 +10,6 @@ import { RecoilRoot, useRecoilState, useRecoilValue } from 'recoil';
 import { ThemedView } from '@/components/ThemedView';
 import { ThemedText } from '@/components/ThemedText';
 import React from 'react';
-import HeaderView from '@/components/HeaderView';
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 export default function RootLayout() {
@@ -59,7 +58,6 @@ export default function RootLayout() {
               headerTintColor: '#fff',
               fullScreenGestureEnabled: true,
               animation: 'slide_from_right',
-              // header: () => <HeaderView/>,
             }
 
           }

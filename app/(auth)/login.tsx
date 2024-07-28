@@ -35,7 +35,6 @@ export default function LoginScreen() {
   return (
 
     <ImageBackground style={[styles.container, styles.center]}
-
       blurRadius={5}
       resizeMode="cover"
       source={require('@/assets/images/pngegg.png')}
@@ -84,6 +83,10 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#016cf5",
+     justifyContent: 'center',
+     alignItems: 'center',
+     height: '100%',
+     width: '100%',
   },
   container_wraper: {
     width: "85%",

@@ -1,17 +1,17 @@
-import { Image, StyleSheet, Platform, SafeAreaView, Pressable, Animated, TextInput, TouchableOpacity } from 'react-native';
+import { StyleSheet, SafeAreaView, Pressable, Animated, TextInput,} from 'react-native';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
-import { ThemedTextInput } from '@/components/ThemedTextInput';
-import { borderColor, mainColor, subColor, typographyStyle } from '@/constants/Styles';
-import { ThemedTextSearch } from './ThamedTextSearch';
 import { useState, useRef } from 'react';
-import Ionicons from '@expo/vector-icons/Ionicons';
 import { useRecoilState } from 'recoil';
 import { userHeaderText } from '@/constants/Atoms';
-
+import { mainColor, subColor, typographyStyle } from '@/constants/Styles';
+import { ThemedTextInput } from './ThemedTextInput';
+import { StatusBar } from 'react-native';
+StatusBar.setTranslucent(false);
+StatusBar.setBackgroundColor(mainColor);
 export default function HeaderView() {
     const [isFocused, setIsFocused] = useState(false);
-    const [headerText, setHeaderText] = useRecoilState<string | null>(userHeaderText);
+    const [headerText, setHeaderText] = useRecoilState<string >(userHeaderText);
     const backgroundColor = useRef(new Animated.Value(1)).current;
 
     const interpolatedColor = backgroundColor.interpolate({
@@ -36,7 +36,6 @@ export default function HeaderView() {
 
     const handleBlur = () => {
         setIsFocused(false);
-
         Animated.timing(backgroundColor, {
             toValue: 1,
             duration: 350,
@@ -48,48 +47,46 @@ export default function HeaderView() {
         handleBlur();
     };
 
+    const renderBody = <ThemedView style={[styles.containerWrap,]}>
+        <Animated.View style={[styles.input, styles.inlineLeft, { backgroundColor: interpolatedColor },]}>
+            <ThemedTextInput
+                style={[typographyStyle.subheadline_Regular]}
+                placeholder="Search..."
+                onFocus={handleFocus}
+                onBlur={handleBlur}
+                onTouchEnd={handleFocus}
+                placeholderTextColor={'#fff'} 
+                />
+        </Animated.View>
+        <Animated.View style={[styles.inlineRight, {
+            backgroundColor: interpolatedButonColor,
+            display: headerText ? 'flex' : 'none',
+        },
+
+        ]}>
+            <Pressable style={[styles.button, {
+                display: isFocused ? 'flex' : 'none',
+            }]} onPress={handlePress}>
+                <ThemedText type='Subheadline_Regular' style={[{ color: 'white' }]}>{headerText ?? ""}</ThemedText>
+            </Pressable>
+        </Animated.View>
+
+    </ThemedView>;
     return (
         <ThemedView style={styles.form}>
             <SafeAreaView style={styles.container}>
-                <ThemedView style={[styles.containerWrap,]}>
-                    <Animated.View style={[styles.input, styles.inlineLeft, { backgroundColor: interpolatedColor },]}>
-                        <TextInput
-                            style={[typographyStyle.subheadline_Regular, ]}
-                            placeholder="Search..."
-                            onFocus={handleFocus}
-                            onBlur={handleBlur}
-                            onTouchEnd={handleFocus}
-                            placeholderTextColor={'#fff'}
-                        />
-                    </Animated.View>
-                    <Animated.View style={[styles.inlineRight, { 
-                        backgroundColor: interpolatedButonColor,
-                        display: headerText? 'flex' : 'none',
-                    }, 
-                         
-                         ]}>
-                        <Pressable style={[styles.button, {
-                            display: isFocused? 'flex' : 'none',
-
-                        }]} onPress={handlePress}>
-                            <ThemedText type='Subheadline_Regular' style={[{color: 'white'}]}>{headerText??""}</ThemedText>
-                        </Pressable>
-                    </Animated.View>
-
-                </ThemedView>
+                {renderBody}
             </SafeAreaView>
         </ThemedView>
     );
 }
 
 const styles = StyleSheet.create({
-
     form: {
         width: '100%',
         backgroundColor: mainColor,
         flexDirection: 'row',
         justifyContent: 'center',
-        
     },
     
     container: {
@@ -97,7 +94,6 @@ const styles = StyleSheet.create({
         marginBottom: 10,
         marginHorizontal: 10,
         width: '90%',
-        
     },
 
     containerWrap: {

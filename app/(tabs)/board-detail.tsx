@@ -16,6 +16,7 @@ import { truncateWords } from '@/constants/Helper';
 
 import AddMemberComponent from '@/components/AddMember';
 import CreateCardComponent from '@/components/CreateCard';
+import { ThemedCard } from '@/components/ThemedCard';
 interface IBoardDetailScreenProps extends IActionProps {
   renderContent?: () => JSX.Element;
 }
@@ -111,39 +112,21 @@ export default function BoardDetailScreen() {
     //  });
   };
 
-  const RightActions = ({ item }: { item: CardDto }) => (
-    <Pressable style={[globalStyle.rightActions, globalStyle.boarder]} onPress={async () => { await onSwipeFromRight(item) }}>
+  const RightActions = ( item: CardDto ) => (
+    <Pressable style={[globalStyle.rightActions, globalStyle.boarder]} onPress={async () => 
+    { await onSwipeFromRight(item) }}>
       <ThemedText style={styles.text} >Delete</ThemedText>
     </Pressable>
   );
 
-  const renderItem: ListRenderItem<CardDto> = ({ item }) =>
+  const renderItem: ListRenderItem<CardDto> = ({ item, index }) =>
   {
     return (
-      <GestureHandlerRootView style={[globalStyle.boarder, globalStyle.background, 
-      {
-        height: "auto",
-        maxHeight: 120,
-      }]}>
-      <Swipeable renderRightActions={() => <RightActions item={item}
-      />}>
-        <Pressable onPress={() => {
-          console.log(`call ${item.title}`);
-        }} >
-          <ThemedView style={globalStyle.item}>
-            <ThemedText type='default'>{truncateWords(item.title, 6) }</ThemedText>
-            <ThemedText style={globalStyle.describe}>
-              <ThemedText type='default'>{truncateWords(item.description, 10) }</ThemedText>
-            </ThemedText>
-            <ThemedText>
-              <ThemedText style={globalStyle.inlineFotter}>Amount: {item.amount} </ThemedText>
-              <ThemedText style={globalStyle.inlineFotter}>Debts: {item.debts?.length}</ThemedText>
-            </ThemedText>
-          </ThemedView>
-        </Pressable>
-      </Swipeable>
-    </GestureHandlerRootView>
-    
+      <ThemedCard cardModel={item} rightActions={RightActions(item)} 
+        type= {
+           (boardModelResult?.cards?.length??0) - 1 != index ? 'primary' : 'secondary'
+        }
+      />
     );
   }
 
@@ -185,30 +168,18 @@ export default function BoardDetailScreen() {
 
   return (
     <>
-      <Animated.View
-        style={[
-          globalStyle.header
+      <ThemedView
+        style={[styles.form
         ]}>
-        <Image
-          source={require('@/assets/images/signpost.png')}
-          style={styles.reactLogo} />
-        <SafeAreaView style={styles.safeAreaView}>
-
-          {renderCardInfo()}
-        </SafeAreaView>
-      </Animated.View>
-
-
-      <FlatList
+        <FlatList
           style={[styles.scrollView]}
-          // scrollEventThrottle={16}
           data={boardModelResult?.cards ?? []}
           renderItem={renderItem}
-
           keyExtractor={(item: CardDto) => item.id.toString()}
           onRefresh={onRefresh}
           refreshing={refreshing}
         />
+        </ThemedView>
       {renderModel()}
       <FloatingAction
         position="right"
@@ -221,6 +192,12 @@ export default function BoardDetailScreen() {
 }
 
 const styles = StyleSheet.create({
+  form: {
+    flex: 1,
+    justifyContent: 'flex-start',
+    alignItems: 'stretch',
+    width: '100%',
+  },
   scrollView: {
     flex: 1,
   },

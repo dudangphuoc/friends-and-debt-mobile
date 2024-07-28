@@ -1,4 +1,4 @@
-import { Image, StyleSheet, Platform, Button, View, Modal, Alert, SafeAreaView, Pressable, ScrollView, RefreshControl, TouchableHighlight, FlatList, ListRenderItem, useColorScheme } from 'react-native';
+import {  StyleSheet,  Modal, Alert, SafeAreaView, Pressable, ListRenderItem, useColorScheme, TouchableOpacity } from 'react-native';
 import { HelloWave } from '@/components/HelloWave';
 import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedText } from '@/components/ThemedText';
@@ -17,8 +17,10 @@ import {
 } from 'react-native-gesture-handler';
 
 import Animated from 'react-native-reanimated';
-import { globalStyle } from '@/constants/Styles';
-import {ThemedFilter} from '@/components/ThemedFilter';
+import { borderRadius, globalStyle } from '@/constants/Styles';
+import { ThemedFilter } from '@/components/ThemedFilter';
+import { ThemedBoard } from '@/components/ThemedBoard';
+import { ParallaxView } from '@/components/ParallaxView';
 
 export default function BoardScreen() {
   const [modalVisible, setModalVisible] = useState(false);
@@ -76,8 +78,8 @@ export default function BoardScreen() {
 
   const onSwipeFromRight = async (item: BoardModel) => {
     await boardFriendsAndDebtApi().delete(item.id).then(async (response) => {
-        await refreshingData();
-     });
+      await refreshingData();
+    });
   };
 
   const renderModel = () => {
@@ -100,7 +102,6 @@ export default function BoardScreen() {
               name={name}
               onNameChange={(text: string) => setName(text)}
               onColorChange={(text: string) => setColor(text)} />
-
             <ThemedView style={styles.inlineAction}>
               <Pressable
                 onPress={() => setModalVisible(!modalVisible)}>
@@ -118,84 +119,69 @@ export default function BoardScreen() {
     );
   };
 
-  const renderItem: ListRenderItem<BoardModel> = ({ item }) =>
-    
-    <GestureHandlerRootView style={[globalStyle.boarder, globalStyle.background]}>
-      <Swipeable renderRightActions={() => <RightActions item={item} 
-      />}>
-        <Pressable onPress={() => {
-          router.push(`/board-detail?boardId=${item.id}`);
-        }} >
+  const renderItem: ListRenderItem<BoardModel> = ({ item, index  }) => <ThemedBoard boardModel={item} rightActions={RightActions(item)} type={
+    (boardsModelResult?.length??0) - 1 != index ? 'primary' : 'secondary'
+  } />
 
-          <ThemedView style={globalStyle.item}>
-            <ThemedText type='defaultSemiBold'>{item.name}</ThemedText>
-            <ThemedText>
-              <ThemedText type='default' style={globalStyle.inlineFotter}>Card: {item.cards?.length} </ThemedText> 
-              <ThemedText type='default' style={globalStyle.inlineFotter}>Member: {item.members?.length}</ThemedText>
-            </ThemedText>
-          </ThemedView>
-        </Pressable>
-
-      </Swipeable>
-    </GestureHandlerRootView>
-    ;
-
-  const RightActions = ({ item }: { item: BoardModel }) => (
-    <Pressable style={[globalStyle.rightActions, globalStyle.boarder]} onPress={async () =>{await onSwipeFromRight(item)}}>
-        <ThemedText style={styles.text} >Delete</ThemedText>
+  const RightActions = (item: BoardModel) => (
+    <Pressable style={[globalStyle.rightActions, globalStyle.boarder, {
+      borderStartStartRadius: borderRadius,
+      borderEndStartRadius: borderRadius,
+    }]} onPress={async () => { await onSwipeFromRight(item) }}>
+      <ThemedText style={styles.text} >Delete</ThemedText>
     </Pressable>
   );
 
-  const option  = [
+  const option = [
     {
-      name :"Payment received",
-      value : "PaymentReceived1",
+      name: "Payment received",
+      value: "PaymentReceived1",
     },
     {
-      name :"Payment sent",
-      value : "PaymentSent2",
+      name: "Payment sent",
+      value: "PaymentSent2",
     },
     {
-      name :"Payment received",
-      value : "PaymentReceived3",
+      name: "Payment received",
+      value: "PaymentReceived3",
     },
     {
-      name :"Payment sent",
-      value : "PaymentSent4",
+      name: "Payment sent",
+      value: "PaymentSent4",
     },
   ];
-    
+  
   const handlePress = (value: string) => {
-  
+
   };
-  
+
   return (
     <>
-    
-      <ThemedView
-        style={[ styles.form
+      
+          <ThemedView
+        style={[styles.form
         ]}>
         <SafeAreaView style={styles.safeAreaView}>
-        <ThemedFilter onPress={handlePress} tags={option}/>
-        <FlatList
-        style={[styles.scrollView]}
-        // scrollEventThrottle={16}
-        data={boardsModelResult ?? []}
-        renderItem={renderItem}
-        keyExtractor={(item: BoardModel) => item.id.toString()}
-        onRefresh={onRefresh}
-        refreshing={refreshing}
-      />
-
+          <ThemedFilter onPress={handlePress} tags={option} />
+          {/* <FlatList
+            style={[styles.scrollView]}
+            data={boardsModelResult ?? []}
+            renderItem={renderItem}
+            keyExtractor={(item: BoardModel) => item.id.toString()}
+            onRefresh={onRefresh}
+            refreshing={refreshing}
+          /> */}
         </SafeAreaView>
       </ThemedView>
-      {renderModel()}
+    
+      
+      {/* {renderModel()}
       <FloatingAction
         position="right"
         actionsPaddingTopBottom={18}
         actions={actions}
         onPressItem={onPressButton}
-      />
+      /> */}
 
     </>
   );
@@ -208,12 +194,14 @@ const styles = StyleSheet.create({
     alignItems: 'stretch',
     width: '100%',
   },
-  actionText: {
-    color: 'white',
-    fontWeight: '600',
-    padding: 20,
-  },
 
+  item: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 16,
+    borderBottomWidth: 1,
+    borderBottomColor: '#ccc',
+  },
 
   safeAreaView: {
     flex: 1, // Đảm bảo SafeAreaView chiếm toàn bộ màn hình
@@ -233,19 +221,10 @@ const styles = StyleSheet.create({
     gap: 8,
     marginBottom: 8,
   },
-
-  reactLogo: {
-    height: 250,
-    width: "auto",
-    resizeMode: 'cover',
-    justifyContent: 'flex-end',
-    alignItems: 'flex-end',
-  },
-
   inlineAction: {
-    flexDirection: 'row', // Sắp xếp theo hàng
-    justifyContent: 'space-around', // Cách đều các button
-    alignItems: 'center', // Căn giữa theo chiều dọc
+    flexDirection: 'row',
+    justifyContent: 'space-around', 
+    alignItems: 'center', 
     height: 64,
     borderTopColor: 'grey',
     borderTopWidth: 1,
@@ -255,7 +234,5 @@ const styles = StyleSheet.create({
   },
   scrollView: {
     flex: 1,
-  },
-  wrapper: {
   },
 });

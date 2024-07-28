@@ -42,7 +42,7 @@ export const userCredentials = atom<AuthenticateResultModel | null>({
       ]
 });
 
-export const userHeaderText = atom<string | null>({
+export const userHeaderText = atom<string>({
     key: 'userHeaderText',
     default: '',
 });
