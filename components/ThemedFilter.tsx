@@ -9,12 +9,14 @@ type FilterProps = {
 }
 export type ThemedFilterProps = {
     tags: FilterProps[];
+    value?: string;
     onPress: (value: string) => void;
 };
 
-export function ThemedFilter({ tags, onPress }: ThemedFilterProps) {
-    const [selectedValue, setSelectedValue] = useState<string | null>('');
+export function ThemedFilter({ tags, value, onPress }: ThemedFilterProps) {
+    const [selectedValue, setSelectedValue] = useState<string | null>(value??'');
     useEffect(() => {}, [selectedValue]);
+    
     const handlePress = (value: string) => {
         try{
             setSelectedValue(selectedValue == value? '': value);

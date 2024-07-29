@@ -15,9 +15,10 @@ const newDirPath = path.join(root, 'app-example');
 const newAppDirPath = path.join(root, 'app');
 
 const indexContent = `import { Text, View } from "react-native";
+import { LogBox } from 'react-native';
 import { RecoilRoot } from "recoil";
 export default function Index() {
- 
+LogBox.ignoreAllLogs(true); // Tắt tất cả các cảnh báo
   return (
     <View
       style={{

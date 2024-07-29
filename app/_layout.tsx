@@ -10,9 +10,11 @@ import { RecoilRoot, useRecoilState, useRecoilValue } from 'recoil';
 import { ThemedView } from '@/components/ThemedView';
 import { ThemedText } from '@/components/ThemedText';
 import React from 'react';
+import { LogBox } from 'react-native';
 // Prevent the splash screen from auto-hiding before asset loading is complete.
 SplashScreen.preventAutoHideAsync();
 export default function RootLayout() {
+  LogBox.ignoreAllLogs(true); // Tắt tất cả các cảnh báo
   const [isReady, setIsReady] = useState(false);
   const [loaded] = useFonts({
     SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),

@@ -12,6 +12,9 @@
       "resizeMode": "contain",
       "backgroundColor": "#ffffff"
     },
+    "development": {
+      "logLevel": "warn"
+    },
     "ios": {
       "supportsTablet": true
     },

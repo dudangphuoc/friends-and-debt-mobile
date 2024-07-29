@@ -1,8 +1,7 @@
-import { atom, AtomEffect, RecoilState, useRecoilValue } from "recoil";
+import { atom, AtomEffect, atomFamily, RecoilState, useRecoilValue } from "recoil";
 import { recoilPersist } from "recoil-persist";
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { AuthenticateResultModel } from "@/shared/friends-and-debt/friends-and-debt";
-
+import { AuthenticateResultModel, CreateBoardModel } from "@/shared/friends-and-debt/friends-and-debt";
 const { persistAtom } = recoilPersist({
     key: 'recoil-persist',
     storage: AsyncStorage,
@@ -52,8 +51,20 @@ export const userHeaderLabel = atom<string | null>({
     default: '',
 });
 
-
-export const eventHeaderText = atom({
-  key: 'eventHeaderText',
-  default: () => {} ,
+export const eventHeader = atomFamily({
+  key: 'eventHeader',
+  default: (msg:string) => {},
 });
+export const headerSearchText = atom({
+  key: 'headerSearchText',
+  default:'',
+});
+
+
+export const createBoard = atom<CreateBoardModel>({
+  key: 'createBoard',
+  default:{
+    name: '',
+  },
+});
+

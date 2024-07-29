@@ -5,30 +5,31 @@ import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { ThemedTextInput } from '@/components/ThemedTextInput';
+import { useRecoilState } from 'recoil';
+import { CreateBoardModel } from '@/shared/friends-and-debt/friends-and-debt';
+import { createBoard } from '@/constants/Atoms';
 
 
 export type FormCreateBoardProps = {
-    onNameChange?: (name: string) => void;
-    name?: string;
-    onColorChange?: (color: string) => void;
-    color?: string;
-    id?: string;
 };
 
-export default function CreateBoardComponent({ onNameChange, onColorChange, color, name, id}: FormCreateBoardProps) {
+export default function CreateBoardComponent({}: FormCreateBoardProps) {
+    const [board, setBoard] = useRecoilState<CreateBoardModel>(createBoard);
+
     return (
         <ThemedView style={{ padding: 20, flex: 1, justifyContent: 'flex-start', alignItems: 'flex-start' }}>
             <ThemedView style={styles.form}>
                 <ThemedView style={styles.inlineForm}>
                     <ThemedText style={styles.inlineFormLabel}>Name</ThemedText>
-                    <ThemedTextInput
+                    <ThemedTextInput 
+                        type='default'
                         style={styles.inlineFormInput}
                         placeholder="Board name"
-                        value={name}
-                        onChangeText={onNameChange}
+                        value={board.name}
+                        onChangeText={(text) => setBoard({ ...board, name: text })} 
                     />
                 </ThemedView>
-                <ThemedView style={styles.inlineForm}>
+                {/* <ThemedView style={styles.inlineForm}>
                     <ThemedText style={styles.inlineFormLabel}>Color</ThemedText>
                     <ThemedTextInput
                         value={color}
@@ -36,7 +37,7 @@ export default function CreateBoardComponent({ onNameChange, onColorChange, colo
                         placeholder="color"
                         onChangeText={onColorChange}
                     />
-                </ThemedView>
+                </ThemedView> */}
 
             </ThemedView>
 

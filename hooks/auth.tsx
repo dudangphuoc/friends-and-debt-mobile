@@ -26,10 +26,13 @@ export function useAuth() {
   return React.useContext(AuthContext);
 }
 
-function useProtectedRoute(user: AuthenticateResultModel | null) {
+function useProtectedRoute() {
+  const [user, setAuth] = useRecoilState<AuthenticateResultModel | null>(userCredentials);
+ 
   const segments = useSegments();
   const router = useRouter();
   setAccessToken(user);
+ 
   React.useEffect(() => {
     const inAuthGroup = segments[0] === "(auth)";
 
@@ -44,8 +47,22 @@ function useProtectedRoute(user: AuthenticateResultModel | null) {
 
 export const Provider: FC<AuthProviderProps> = (props) => {
   const [user, setAuth] = useRecoilState<AuthenticateResultModel | null>(userCredentials);
-  useProtectedRoute(user);
-
+  const { signOut } = useAuth();
+  useProtectedRoute();
+  if (user?.expireInSeconds !== undefined) {
+    const startTime = new Date().getTime(); // Thời điểm bắt đầu
+    setTimeout(() => {
+      const currentTime = new Date().getTime();
+      const elapsedTimeInSeconds = Math.floor((currentTime - startTime) / 1000);
+      if (elapsedTimeInSeconds >= user?.expireInSeconds) {
+        setAuth(null)
+        signOut();
+        console.log("Hết hạn token");
+        // Thực hiện các hành động khi hết hạn (ví dụ: hiển thị thông báo, chuyển hướng, ...)
+      }
+    }, user?.expireInSeconds * 1000); // Chuyển đổi expireInSeconds sang mili giây
+  }
+  
   return (
     <AuthContext.Provider
       value={{

@@ -1933,6 +1933,7 @@ export interface CardDto {
     description: string | undefined;
     amount: number;
     ownerId: number;
+    creationTime: moment.Moment;
     cardOwner: UserDto;
     debts: DebtDto[] | undefined;
 }
@@ -1951,7 +1952,6 @@ export interface ChangeUserLanguageDto {
 }
 
 export interface CreateBoardModel {
-    color: string | undefined;
     name: string | undefined;
 }
 
@@ -2132,7 +2132,6 @@ export interface TenantLoginInfoDto {
 }
 
 export interface UpdateBoardModel {
-    color: string | undefined;
     id: number;
     name: string | undefined;
 }

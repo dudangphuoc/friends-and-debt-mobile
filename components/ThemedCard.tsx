@@ -6,7 +6,7 @@ import { GestureHandlerRootView, Swipeable } from "react-native-gesture-handler"
 import { ThemedText } from "./ThemedText";
 import { ThemedView } from "./ThemedView";
 import { truncateWords } from "@/constants/Helper";
-
+import moment from 'moment';
 export type ThemedCardProps = TextProps & {
     cardModel: CardDto;
     rightActions: React.ReactNode;
@@ -50,8 +50,11 @@ export const ThemedCard  = ({ cardModel, rightActions, type }: ThemedCardProps) 
                         <ThemedText type='default'>{truncateWords(cardModel.description, 10) }</ThemedText>
                     </ThemedText>
                     <ThemedView style={[styles.inlineFotter]}>
-                    <ThemedText style={globalStyle.inlineFotter}>Amount: {cardModel.amount} </ThemedText>
-                    <ThemedText style={globalStyle.inlineFotter}>Debts: {cardModel.debts?.length}</ThemedText>
+                        <ThemedText style={globalStyle.inlineFotter}>Amount: {cardModel.amount} </ThemedText>
+                        <ThemedText style={globalStyle.inlineFotter}>Debts: {cardModel.debts?.length}</ThemedText>
+                    </ThemedView>
+                    <ThemedView style={[styles.inlineFotter]}>
+                        <ThemedText style={globalStyle.inlineFotter}>Creation Time: {moment(cardModel?.creationTime).format('DD/MM/YYYY')}</ThemedText> 
                     </ThemedView>
                 </ThemedView>
                 <Pressable style={[styles.cardRight]}

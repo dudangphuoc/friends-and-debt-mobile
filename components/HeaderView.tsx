@@ -3,15 +3,18 @@ import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { useState, useRef } from 'react';
 import { useRecoilState } from 'recoil';
-import { userHeaderText } from '@/constants/Atoms';
+import {  headerSearchText, userHeaderText } from '@/constants/Atoms';
 import { mainColor, subColor, typographyStyle } from '@/constants/Styles';
 import { ThemedTextInput } from './ThemedTextInput';
 import { StatusBar } from 'react-native';
+
 StatusBar.setTranslucent(false);
 StatusBar.setBackgroundColor(mainColor);
+
 export default function HeaderView() {
     const [isFocused, setIsFocused] = useState(false);
     const [headerText, setHeaderText] = useRecoilState<string >(userHeaderText);
+    const [text, setHeaderSearchText] = useRecoilState(headerSearchText);
     const backgroundColor = useRef(new Animated.Value(1)).current;
 
     const interpolatedColor = backgroundColor.interpolate({
@@ -44,18 +47,24 @@ export default function HeaderView() {
     };
 
     const handlePress = () => {
-        handleBlur();
+        try {
+         
+        } finally {
+            handleBlur();
+        }
     };
 
     const renderBody = <ThemedView style={[styles.containerWrap,]}>
         <Animated.View style={[styles.input, styles.inlineLeft, { backgroundColor: interpolatedColor },]}>
             <ThemedTextInput
-                style={[typographyStyle.subheadline_Regular]}
+                style={[typographyStyle.subheadline_Regular, styles.input]}
                 placeholder="Search..."
                 onFocus={handleFocus}
                 onBlur={handleBlur}
                 onTouchEnd={handleFocus}
-                placeholderTextColor={'#fff'} 
+                placeholderTextColor={'#fff'}
+                onChangeText={(text) => setHeaderSearchText(text)}
+                value={text}
                 />
         </Animated.View>
         <Animated.View style={[styles.inlineRight, {

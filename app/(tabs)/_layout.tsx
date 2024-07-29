@@ -11,7 +11,7 @@ import { userHeaderText } from '@/constants/Atoms';
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
-  const [_, setHeaderText] = useRecoilState<string >(userHeaderText);
+  const [_, setHeaderText] = useRecoilState<string>(userHeaderText);
   const [headerShown, setHeaderShown] = useState(false);
   useEffect(() => {
 
@@ -40,6 +40,25 @@ export default function TabLayout() {
           title: 'Home',
           tabBarIcon: ({ color, focused }) => (
             <TabBarIcon name={focused ? 'home' : 'home-outline'} color={color} />
+          ),
+        }}
+      />
+
+      <Tabs.Screen
+        name="contact"
+        listeners={
+          {
+            tabPress: (e) => {
+              setHeaderText("Contacts");
+              setHeaderShown(true);
+            },
+          }
+        }
+
+        options={{
+          title: 'Contacts',
+          tabBarIcon: ({ color, focused }) => (
+            <TabBarIcon name={focused ? 'book' : 'book-outline'} color={color} />
           ),
         }}
       />
