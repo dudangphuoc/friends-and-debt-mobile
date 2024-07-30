@@ -1,7 +1,7 @@
 import { atom, AtomEffect, atomFamily, RecoilState, useRecoilValue } from "recoil";
 import { recoilPersist } from "recoil-persist";
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import { AuthenticateResultModel, CreateBoardModel } from "@/shared/friends-and-debt/friends-and-debt";
+import { AuthenticateResultModel, CreateBoardModel, FriendModel, FriendModelPagedResultDto, UserDtoPagedResultDto } from "@/shared/friends-and-debt/friends-and-debt";
 const { persistAtom } = recoilPersist({
     key: 'recoil-persist',
     storage: AsyncStorage,
@@ -67,4 +67,23 @@ export const createBoard = atom<CreateBoardModel>({
     name: '',
   },
 });
+
+export const friends = atom<FriendModel[]>({
+  key: 'friendModelPagedResultDto',
+  default: [],
+});
+
+export const users = atom<UserDtoPagedResultDto>({
+  key: 'users',
+  default: {
+    items: [],
+    totalCount: 0,
+  },
+});
+
+export const filterValues = atom<string>({
+  key: 'filterValues',
+  default: '',
+});
+
 

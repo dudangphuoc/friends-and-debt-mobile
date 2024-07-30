@@ -12,7 +12,7 @@ import HeaderView from "./HeaderView";
 
 type Props = PropsWithChildren<{
    
-  }>;
+}>;
 
   
 export function ParallaxView ({children}:Props ) {

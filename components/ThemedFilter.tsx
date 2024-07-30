@@ -1,42 +1,50 @@
 import { mainColor, textColor, textColorLight } from "@/constants/Styles";
 import { ThemedText } from "./ThemedText";
 import { ThemedView } from "./ThemedView";
-import { Text, type TextProps, StyleSheet, ScrollView, KeyboardAvoidingView, Pressable , } from 'react-native';
+import { Text, type TextProps, StyleSheet, ScrollView, KeyboardAvoidingView, Pressable, PressableProps , } from 'react-native';
 import React, { useEffect, useState } from "react";
+import { filterValues } from "@/constants/Atoms";
+import { useRecoilState } from "recoil";
 type FilterProps = {
     name: string;
     value: string;
 }
-export type ThemedFilterProps = {
+
+export type ThemedFilterProps = PressableProps &{
     tags: FilterProps[];
     value?: string;
-    onPress: (value: string) => void;
+    onPressAction: (value: string) => void;
 };
 
-export function ThemedFilter({ tags, value, onPress }: ThemedFilterProps) {
-    const [selectedValue, setSelectedValue] = useState<string | null>(value??'');
-    useEffect(() => {}, [selectedValue]);
+export function ThemedFilter({ tags, value, onPressAction: onPressAction, ...rest}: ThemedFilterProps) {
+    const [filterValue, setFilterValue] = useRecoilState<string>(filterValues);
+
+    useEffect(() => {
+        if(value){
+            setFilterValue(value);
+        }
+    }, [filterValue]);
     
     const handlePress = (value: string) => {
         try{
-            setSelectedValue(selectedValue == value? '': value);
-        }finally{
-             onPress(value);
+            setFilterValue(filterValue == value? '': value);
+        } finally{
+            onPressAction(value);
         }
     };
 
     return (
-        <KeyboardAvoidingView style={styles.container}>
+        <KeyboardAvoidingView style={styles.container} >
             <ScrollView horizontal={true} showsHorizontalScrollIndicator={true}
                 contentContainerStyle={styles.scrollView}
             >
                 {tags.map((tag, index) => {
                     return (
-                        <Pressable onPress={() => handlePress(tag.value)} key={index}>
-                            <ThemedView style={[styles.box, selectedValue==tag.value ? styles.Selected: styles.noneSelected]}>
+                        <Pressable onPress={() => handlePress(tag.value)} key={index} {...rest}>
+                            <ThemedView style={[styles.box, filterValue==tag.value ? styles.Selected: styles.noneSelected]} >
                                 <ThemedText style={
                                 [styles.text, {
-                                    color:  selectedValue==tag.value ? textColorLight : textColor
+                                    color:  filterValue==tag.value ? textColorLight : textColor
                                 }]} 
                                 type="Subheadline_Regular">{tag.name}</ThemedText>
                             </ThemedView>

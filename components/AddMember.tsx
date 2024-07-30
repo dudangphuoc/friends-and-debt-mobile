@@ -21,7 +21,6 @@ export default function AddMemberComponent({ board, onSubmit, onCancel }: FormAd
                     <ThemedText style={styles.inlineFormLabel}>Description</ThemedText>
                     <ThemedTextSearch
                         style={styles.inlineFormInput}
-                        placeholder="Description"
                     />
                 </ThemedView>
 

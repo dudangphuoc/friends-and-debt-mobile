@@ -1,4 +1,4 @@
-import { StyleSheet, SafeAreaView, Pressable, Animated, TextInput,} from 'react-native';
+import { StyleSheet, SafeAreaView, Pressable, Animated, TextInput, Platform,} from 'react-native';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { useState, useRef } from 'react';
@@ -8,9 +8,10 @@ import { mainColor, subColor, typographyStyle } from '@/constants/Styles';
 import { ThemedTextInput } from './ThemedTextInput';
 import { StatusBar } from 'react-native';
 
-StatusBar.setTranslucent(false);
-StatusBar.setBackgroundColor(mainColor);
-
+if (Platform.OS === 'android') {
+    StatusBar.setBackgroundColor(mainColor);
+    StatusBar.setTranslucent(false);
+}
 export default function HeaderView() {
     const [isFocused, setIsFocused] = useState(false);
     const [headerText, setHeaderText] = useRecoilState<string >(userHeaderText);
@@ -55,7 +56,7 @@ export default function HeaderView() {
     };
 
     const renderBody = <ThemedView style={[styles.containerWrap,]}>
-        <Animated.View style={[styles.input, styles.inlineLeft, { backgroundColor: interpolatedColor },]}>
+        {/* <Animated.View style={[styles.input, styles.inlineLeft, { backgroundColor: interpolatedColor },]}>
             <ThemedTextInput
                 style={[typographyStyle.subheadline_Regular, styles.input]}
                 placeholder="Search..."
@@ -78,7 +79,7 @@ export default function HeaderView() {
             }]} onPress={handlePress}>
                 <ThemedText type='Subheadline_Regular' style={[{ color: 'white' }]}>{headerText ?? ""}</ThemedText>
             </Pressable>
-        </Animated.View>
+        </Animated.View> */}
 
     </ThemedView>;
     return (

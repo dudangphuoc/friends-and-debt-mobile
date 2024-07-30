@@ -61,7 +61,6 @@ export default function RootLayout() {
               fullScreenGestureEnabled: true,
               animation: 'slide_from_right',
             }
-
           }
           ></Stack>
         </Provider>

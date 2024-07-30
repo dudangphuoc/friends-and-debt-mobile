@@ -142,11 +142,13 @@ export default function BoardScreen() {
         style={[styles.form
         ]}>
         <SafeAreaView style={styles.safeAreaView}>
-          <ThemedFilter onPress={handlePress} tags={option} />
+          <ThemedFilter onPressAction={handlePress} tags={option} />
+
           <FlatList
             style={[styles.scrollView]}
             data={boardsModelResult ?? []}
             renderItem={renderItem}
+            
             keyExtractor={(item: BoardModel) => item.id.toString()}
             onRefresh={onRefresh}
             refreshing={refreshing}

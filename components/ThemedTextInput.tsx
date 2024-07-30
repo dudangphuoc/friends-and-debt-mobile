@@ -1,13 +1,14 @@
 import { Text, StyleSheet, TextInput, TextInputProps, Keyboard, KeyboardEventName, TouchableWithoutFeedback } from 'react-native';
 
 import { useThemeColor } from '@/hooks/useThemeColor';
-import { useEffect, useRef, useState } from 'react';
+import { LegacyRef, useEffect, useRef, useState } from 'react';
 import React from 'react';
 
 export type ThemedTextProps = TextInputProps & {
   lightColor?: string;
   darkColor?: string;
   type?: 'default' | 'title' | 'defaultSemiBold' | 'subtitle' | 'link';
+  
 };
 //ThemedTextInput
 export function ThemedTextInput({
@@ -15,6 +16,7 @@ export function ThemedTextInput({
   lightColor,
   darkColor,
   type = 'default',
+
   ...rest
 }: ThemedTextProps) {
   const color = useThemeColor({ light: lightColor, dark: darkColor }, 'text');
@@ -37,7 +39,7 @@ export function ThemedTextInput({
   return (
     <>
       <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
-        <TextInput
+        <TextInput 
           enablesReturnKeyAutomatically={true}
           autoCapitalize='none'
           clearButtonMode="while-editing"
