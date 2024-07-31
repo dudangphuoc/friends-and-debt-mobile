@@ -104,7 +104,9 @@ export default function BoardScreen() {
             <ThemedView style={{ padding: 20 }} >
               <ThemedText type="title">Board</ThemedText>
             </ThemedView>
+            
             <CreateBoardComponent />
+
             <ThemedView style={styles.inlineAction}>
               <Pressable
                 onPress={() => setModalVisible(!modalVisible)}>
@@ -137,7 +139,6 @@ export default function BoardScreen() {
 
   return (
     <>
-
       <ThemedView
         style={[styles.form
         ]}>
@@ -155,8 +156,6 @@ export default function BoardScreen() {
           />
         </SafeAreaView>
       </ThemedView>
-
-
       {renderModel()}
       <FloatingAction
         position="right"

@@ -61,11 +61,20 @@ export const headerSearchText = atom({
 });
 
 
-export const createBoard = atom<CreateBoardModel>({
-  key: 'createBoard',
-  default:{
-    name: '',
-  },
+
+export const friendsReloadState = atom<boolean>({
+  key: 'friendsReload',
+  default: false,
+});
+
+export const friendTabsSelected = atom<string>({
+  key: 'friendTabsSelected',
+  default: '0',
+})
+
+export const friendSearching = atom<boolean>({
+  key: 'friendSearching',
+  default: false,
 });
 
 export const friends = atom<FriendModel[]>({
@@ -86,4 +95,16 @@ export const filterValues = atom<string>({
   default: '',
 });
 
+//Board
+export const createBoard = atom<CreateBoardModel>({
+  key: 'createBoard',
+  default:{
+    name: '',
+  },
+});
+
+export const currentBoardIdState = atom<number>({
+  key: 'currentBoardId',
+  default: 0,
+});
 

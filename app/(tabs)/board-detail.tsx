@@ -11,12 +11,14 @@ import { BoardAddCardModel, BoardModel, CardDto } from '@/shared/friends-and-deb
 import { FloatingAction, IActionProps } from 'react-native-floating-action';
 
 import { GestureHandlerRootView, Swipeable } from 'react-native-gesture-handler';
-import { globalStyle } from '@/constants/Styles';
+import { globalStyle, mainColor } from '@/constants/Styles';
 import { truncateWords } from '@/constants/Helper';
 
 import AddMemberComponent from '@/components/AddMember';
 import CreateCardComponent from '@/components/CreateCard';
 import { ThemedCard } from '@/components/ThemedCard';
+import { useRecoilState } from 'recoil';
+import { currentBoardIdState } from '@/constants/Atoms';
 interface IBoardDetailScreenProps extends IActionProps {
   renderContent?: () => JSX.Element;
 }
@@ -27,12 +29,13 @@ export default function BoardDetailScreen() {
   const [modalVisible, setModalVisible] = useState(false);
   const [currentAction, setCurrentAction] = useState<IBoardDetailScreenProps>();
   const [refreshing, setRefreshing] = useState(false);
-  // boardAddCardModel: BoardAddCardModel;
   const [boardAddCardModel, setBoardAddCardModel] = useState<BoardAddCardModel>({ boardId: 0, title: '', description: '', amount: 0 });
-
+  const [currentBoardId, setCurrentBoardId] = useRecoilState<number>(currentBoardIdState);
+  
   useEffect(() => {
     setBoardAddCardModel({ boardId: parseInt(boardId as string), title: '', description: '', amount: 0 });
     refreshingData();
+    setCurrentBoardId(parseInt(boardId as string));
   }, [boardId]);
 
   const actions: IBoardDetailScreenProps[] = [
@@ -152,14 +155,19 @@ export default function BoardDetailScreen() {
           Alert.alert('Modal has been closed.');
           setModalVisible(!modalVisible);
         }}>
-        <SafeAreaView style={styles.safeAreaView}>
+        <ThemedView style={[styles.modelHeader]}>
+
+        </ThemedView>
+        <SafeAreaView style={[ styles.safeAreaView]}>
           <ThemedView style={{ flex: 1 }}>
-            <ThemedView style={{ padding: 20 }} >
-              <ThemedText type="title">{currentAction?.text}</ThemedText>
+            <ThemedView style={{ padding: 10 }} >
+              <ThemedText type='Subheadline_Bold'>{currentAction?.text}</ThemedText>
             </ThemedView>
+            <ThemedView style={[styles.modelBody]}>
             {
               currentAction?.renderContent?.()
             }
+            </ThemedView>
           </ThemedView>
         </SafeAreaView>
       </Modal>
@@ -201,33 +209,8 @@ const styles = StyleSheet.create({
   scrollView: {
     flex: 1,
   },
-  inlineAction: {
-    flexDirection: 'row', // Sắp xếp theo hàng
-    justifyContent: 'space-around', // Cách đều các button
-    alignItems: 'center', // Căn giữa theo chiều dọc
-    height: 64,
-    borderTopColor: 'grey',
-    borderTopWidth: 1,
-  },
   safeAreaView: {
     flex: 1, // Đảm bảo SafeAreaView chiếm toàn bộ màn hình
-  },
-  titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-    flex: 1, // Đảm bảo SafeAreaView chiếm toàn bộ màn hình
-  },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
-  },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
   },
   boarder: {
     borderWidth: 1,
@@ -239,4 +222,14 @@ const styles = StyleSheet.create({
   text: {
     color: "white",
   },
+  modelHeader: {
+    // backgroundColor: mainColor,
+    padding: 10,
+    flexDirection: 'row',
+    height: 70,
+  },
+  modelBody: {
+   
+    flex: 1,
+  }
 });

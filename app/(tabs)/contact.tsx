@@ -2,7 +2,7 @@ import { ThemedFilter } from "@/components/ThemedFilter";
 import ThemedFriend from "@/components/ThemedFriend";
 import { ThemedText } from "@/components/ThemedText";
 import { ThemedView } from "@/components/ThemedView";
-import { friends, users } from "@/constants/Atoms";
+import { friends, friendSearching, friendsReloadState, friendTabsSelected, users } from "@/constants/Atoms";
 import { friendsFriendsAndDebtApi } from "@/hooks/app-initializer";
 import { FriendModel, FriendModelPagedResultDto, UserDtoPagedResultDto } from "@/shared/friends-and-debt/friends-and-debt";
 import Ionicons from "@expo/vector-icons/Ionicons";
@@ -19,15 +19,16 @@ type ContactScreenProps = {
 }
 
 export default function ContactScreen() {
-    const [selectedValue, setSelectedValue] = useState<string | ''>('1');
+    const [selectedValue, setSelectedValue] = useRecoilState<string>(friendTabsSelected);
     const [_friends, setFriends] = useRecoilState<FriendModel[]>(friends);
+    const [searching, setSearching] = useRecoilState<boolean>(friendSearching);
+    const [friendsReload, setFriendsReload] = useRecoilState<boolean>(friendsReloadState);
+    
     const [searchText, setSearchText] = useState<string>('');
     const [page, setPage] = useState<number>(0);
     const [pageSize] = useState<number>(20);
     const [total, setTotal] = useState<number>(0);
     const [isLoading, setIsLoading] = useState(false);
-
-
     const searchInputRef = useRef<TextInput>(null);
     const flatListRef = useRef<FlatList>(null);
 
@@ -36,15 +37,16 @@ export default function ContactScreen() {
         setPage(0);
         fetchData();
     }, [selectedValue]);
+
     useEffect(() => {
         setPage(0);
         fetchData();
-    }, [searchText]);
+        setSearching(searchText !== '' && selectedValue === '2');
+    }, [searchText, friendsReload]);
+
     useEffect(() => {
         fetchData();
     }, [page]);
-    
-    const isHaveMore = total > _friends.length;
 
     const fetchData = async  () => {
         if (isLoading) return;
@@ -53,7 +55,7 @@ export default function ContactScreen() {
             const skipCount = (page) * pageSize;
             if(searchText === '' || selectedValue !== '2')
             {
-                var data = await friendsFriendsAndDebtApi().getAll((Number.parseInt(selectedValue)), skipCount, pageSize);
+                var data = await friendsFriendsAndDebtApi().getAll('',undefined,(Number.parseInt(selectedValue)), skipCount, pageSize);
                 setFriends(data.items || []);
                 setTotal(data.totalCount);
             }
@@ -80,6 +82,8 @@ export default function ContactScreen() {
                 introduce: '',
                 ownerName: user.name,
                 friendName: user.name,
+                ownerId: user.id,
+                userId: user.id
             })),
             totalCount: userDtoPagedResult.totalCount
         };
@@ -109,6 +113,7 @@ export default function ContactScreen() {
     };
 
     const handleSearch = () => {
+       
         if(searchText == ''){
             searchInputRef.current?.focus();
         }else{
@@ -117,15 +122,12 @@ export default function ContactScreen() {
         }
     };
 
-    const renderItem: ListRenderItem<FriendModel> = ({ item, index })  => (
-<>
-    <ThemedFriend friend={item} type={
-        (_friends?.length ?? 0) - 1 != index ? 'first' : 'last'
-    } />
-    
-
-</>
-
+    const renderItem: ListRenderItem<FriendModel> = ({ item, index }) => (
+        <>
+            <ThemedFriend friend={item} type={
+                (_friends?.length ?? 0) - 1 != index ? 'first' : 'last'
+            } />
+        </>
     );
 
     const renderFooter = () => (
@@ -208,11 +210,21 @@ export default function ContactScreen() {
 
 const styles = StyleSheet.create({
     navigator: {
+        position: 'absolute',
+        bottom: 0,
+        width: '100%',
+        height: 48,
         justifyContent: 'space-around',
         alignItems: 'center',
         flexDirection: 'row',
         gap: 24,
         padding: 8,
+        backgroundColor: 'white',
+        borderTopWidth: 1,
+        borderTopColor: '#f0f0f0',
+        borderTopEndRadius: 10,
+        borderTopStartRadius: 10,
+        opacity: 0.9,
     },
     form: {
         flex: 1,

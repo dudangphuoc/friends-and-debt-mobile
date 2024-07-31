@@ -542,13 +542,64 @@ export class FriendListFriendsAndDebt {
     }
 
     /**
+     * @param body (optional) 
+     * @return Success
+     */
+    create(body: CreateFriendModel | undefined): Promise<FriendModel> {
+        let url_ = this.baseUrl + "/api/services/app/FriendList/Create";
+        url_ = url_.replace(/[?&]$/, "");
+
+        const content_ = JSON.stringify(body);
+
+        let options_: RequestInit = {
+            body: content_,
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json",
+                "Accept": "text/plain"
+            }
+        };
+
+        return this.http.fetch(url_, options_).then((_response: Response) => {
+            return this.processCreate(_response);
+        });
+    }
+
+    protected processCreate(response: Response): Promise<FriendModel> {
+        const status = response.status;
+        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
+        if (status === 200) {
+            return response.text().then((_responseText) => {
+            let result200: any = null;
+            result200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as FriendModel;
+            return result200;
+            });
+        } else if (status !== 200 && status !== 204) {
+            return response.text().then((_responseText) => {
+            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
+            });
+        }
+        return Promise.resolve<FriendModel>(null as any);
+    }
+
+    /**
+     * @param keywork (optional) 
+     * @param boardId (optional) 
      * @param requestType (optional) 
      * @param skipCount (optional) 
      * @param maxResultCount (optional) 
      * @return Success
      */
-    getAll(requestType: FriendFilterType | undefined, skipCount: number | undefined, maxResultCount: number | undefined): Promise<FriendModelPagedResultDto> {
+    getAll(keywork: string | undefined, boardId: number | undefined, requestType: FriendFilterType | undefined, skipCount: number | undefined, maxResultCount: number | undefined): Promise<FriendModelPagedResultDto> {
         let url_ = this.baseUrl + "/api/services/app/FriendList/GetAll?";
+        if (keywork === null)
+            throw new Error("The parameter 'keywork' cannot be null.");
+        else if (keywork !== undefined)
+            url_ += "Keywork=" + encodeURIComponent("" + keywork) + "&";
+        if (boardId === null)
+            throw new Error("The parameter 'boardId' cannot be null.");
+        else if (boardId !== undefined)
+            url_ += "BoardId=" + encodeURIComponent("" + boardId) + "&";
         if (requestType === null)
             throw new Error("The parameter 'requestType' cannot be null.");
         else if (requestType !== undefined)
@@ -673,47 +724,6 @@ export class FriendListFriendsAndDebt {
     }
 
     protected processGet(response: Response): Promise<FriendModel> {
-        const status = response.status;
-        let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
-        if (status === 200) {
-            return response.text().then((_responseText) => {
-            let result200: any = null;
-            result200 = _responseText === "" ? null : JSON.parse(_responseText, this.jsonParseReviver) as FriendModel;
-            return result200;
-            });
-        } else if (status !== 200 && status !== 204) {
-            return response.text().then((_responseText) => {
-            return throwException("An unexpected server error occurred.", status, _responseText, _headers);
-            });
-        }
-        return Promise.resolve<FriendModel>(null as any);
-    }
-
-    /**
-     * @param body (optional) 
-     * @return Success
-     */
-    create(body: CreateFriendModel | undefined): Promise<FriendModel> {
-        let url_ = this.baseUrl + "/api/services/app/FriendList/Create";
-        url_ = url_.replace(/[?&]$/, "");
-
-        const content_ = JSON.stringify(body);
-
-        let options_: RequestInit = {
-            body: content_,
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json",
-                "Accept": "text/plain"
-            }
-        };
-
-        return this.http.fetch(url_, options_).then((_response: Response) => {
-            return this.processCreate(_response);
-        });
-    }
-
-    protected processCreate(response: Response): Promise<FriendModel> {
         const status = response.status;
         let _headers: any = {}; if (response.headers && response.headers.forEach) { response.headers.forEach((v: any, k: any) => _headers[k] = v); };
         if (status === 200) {
@@ -1966,7 +1976,7 @@ export interface BoardAddCardModel {
 
 export interface BoardAddMemberModel {
     id: number;
-    userNames: string[] | undefined;
+    userId: number;
 }
 
 export interface BoardModel {
@@ -2013,8 +2023,7 @@ export interface CreateBoardModel {
 
 export interface CreateFriendModel {
     introduce: string | undefined;
-    owner: string | undefined;
-    user: string | undefined;
+    userId: number;
 }
 
 export interface CreateRoleDto {
@@ -2070,6 +2079,8 @@ export interface FriendModel {
     introduce: string | undefined;
     ownerName: string | undefined;
     friendName: string | undefined;
+    ownerId: number;
+    userId: number;
 }
 
 export interface FriendModelPagedResultDto {
