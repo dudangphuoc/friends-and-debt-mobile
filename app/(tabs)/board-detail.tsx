@@ -6,7 +6,7 @@ import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 import { useRouter, useLocalSearchParams } from 'expo-router';
 import { boardFriendsAndDebtApi } from '@/hooks/app-initializer';
-import { useEffect, useState } from 'react';
+import { Profiler, useEffect, useState } from 'react';
 import { BoardAddCardModel, BoardModel, CardDto } from '@/shared/friends-and-debt/friends-and-debt';
 import { FloatingAction, IActionProps } from 'react-native-floating-action';
 
@@ -72,6 +72,7 @@ export default function BoardDetailScreen() {
       }
     }
   ];
+
   const onRefresh = () => {
     setRefreshing(true);
     setTimeout(() => {
@@ -133,14 +134,27 @@ export default function BoardDetailScreen() {
     );
   }
 
-
-  const renderCardInfo = () => {
+  const renderBoardInfo = () => {
+    const members = boardModelResult?.members;
     return (<>
       <ThemedView style={{ backgroundColor: 'transparent' }}>
-        <ThemedText type="title">{boardModelResult?.name}</ThemedText>
-        <ThemedText type="subtitle">Create by {boardModelResult?.owner.name}</ThemedText>
-        <ThemedText type="subtitle">Members: {boardModelResult?.members?.length}</ThemedText>
-        <ThemedText type="subtitle">Cards: {boardModelResult?.cards?.length}</ThemedText>
+        <ThemedText type="Subheadline_Bold">{boardModelResult?.name}</ThemedText>
+        <ThemedText type="Subheadline_Regular">Create by {boardModelResult?.owner.name}</ThemedText>
+        <ThemedText type="Subheadline_Regular">{boardModelResult?.members?.length} Members</ThemedText>
+        <ThemedView style={[styles.profiler]}>
+          {
+            members?.map((member, index) => {
+              console.log( index % 2 );
+              var path = index % 2 == 0 ?  require('@/assets/icons/man.png'): require('@/assets/icons/happy.png');
+              return (
+                <Image key={index}
+                  style={[styles.profilerImage, { left: index * 8 }]}
+                  source={path} />
+              );
+            })
+          }
+        </ThemedView>
+        <ThemedText type="Subheadline_Regular">{boardModelResult?.cards?.length} Cards</ThemedText>
       </ThemedView>
     </>);
   }
@@ -176,9 +190,16 @@ export default function BoardDetailScreen() {
 
   return (
     <>
+      <ThemedView style={styles.boardInfo}>
+        {
+          renderBoardInfo()
+        }
+      </ThemedView>
       <ThemedView
         style={[styles.form
         ]}>
+
+
         <FlatList
           style={[styles.scrollView]}
           data={boardModelResult?.cards ?? []}
@@ -231,5 +252,32 @@ const styles = StyleSheet.create({
   modelBody: {
    
     flex: 1,
+  },
+
+  boardInfo : {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    backgroundColor: mainColor,
+    padding: 10,
+    
+  },
+
+  profiler : {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: -10,
+    width: '100%',
+    height: 50,
+    backgroundColor: mainColor,
+  },
+  profilerImage: {
+    position: 'absolute',
+    borderRadius: 50, 
+    width: 50, 
+    height: 50, 
+    backgroundColor: mainColor,
+    borderWidth: 1,
+    borderColor: 'white',
   }
 });

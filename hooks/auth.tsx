@@ -49,7 +49,12 @@ export const Provider: FC<AuthProviderProps> = (props) => {
   const [user, setAuth] = useRecoilState<AuthenticateResultModel | null>(userCredentials);
   const { signOut } = useAuth();
   useProtectedRoute();
-  if (user?.expireInSeconds !== undefined) {
+    
+  if (user === null) {
+    signOut();
+    // Thực hiện các hành động khi token không hợp lệ (ví dụ: hiển thị thông báo, chuyển hướng, ...)
+  }
+  else if (user?.expireInSeconds !== undefined) {
     const startTime = new Date().getTime(); // Thời điểm bắt đầu
     setTimeout(() => {
       const currentTime = new Date().getTime();
@@ -62,7 +67,7 @@ export const Provider: FC<AuthProviderProps> = (props) => {
       }
     }, user?.expireInSeconds * 1000); // Chuyển đổi expireInSeconds sang mili giây
   }
-  
+
   return (
     <AuthContext.Provider
       value={{
